@@ -1,0 +1,343 @@
+I want you to fully upgrade my existing WebApp and turn it into a complete, production-ready Telegram Mini App with a functioning backend, real user accounts, an admin panel, payment request logic, USDT TRC20 balance management, and realtime exchange rates from the official Central Bank of Russia.
+Keep ALL in-app text fully in Russian exactly as I describe.
+The backend, routing, integrations, and project structure are up to you — you must organize everything cleanly and logically.
+
+Below is the full list of tasks. You must implement ALL of them.
+
+1. CORE GOAL
+
+Convert the current design-only WebApp into a fully functional Telegram WebApp available via my Telegram bot.
+The app must load inside Telegram, use Telegram WebApp APIs, validate Telegram initData, and behave correctly inside a telegram-webview environment.
+
+2. KEEP ALL UI IN RUSSIAN
+
+Every button, label, screen, message, and error should remain in Russian.
+Only internal API names, folder names, and code can be in English.
+
+3. REAL EXCHANGE RATE FROM GOOGLE (OFFICIAL ЦБ РФ RATE)
+
+Implement a backend service that fetches the official RUB/USDT rate from Google by reading the Central Bank of Russia rate ("курс ЦБ РФ").
+The app must:
+
+fetch the CBR USD/RUB rate through Google (the standard Google query that returns CBR rate)
+
+convert USD → USDT 1:1
+
+use this real rate everywhere in the app
+
+update it automatically every 60 seconds
+
+cache it to avoid spamming Google
+
+show this rate to the user inside the app
+
+and explicitly state in the interface (in Russian):
+“Курс берётся по официальной ставке ЦБ РФ через Google. Это одно из наших преимуществ — мы используем честный и прозрачный рыночный курс.”
+
+Make sure rate usage is consistent:
+
+balance in RUB
+
+limit checks
+
+freezing USDT
+
+urgent orders (+0.5%)
+
+standard orders (0%)
+
+all calculations must use the real fetched rate.
+
+4. FULL USER ACCOUNT SYSTEM
+
+Create a full backend system for storing users and sessions.
+
+Database tables MUST include:
+
+users
+
+id
+
+telegram_id
+
+username
+
+full_name
+
+created_at
+
+balances
+
+user_id
+
+balance_usdt_available
+
+balance_usdt_frozen
+
+payment_requests
+
+id
+
+user_id
+
+sum_rub
+
+rate_lock
+
+usdt_frozen
+
+urgency (“срочно” / “стандартно”)
+
+status (“отправлена”, “в обработке”, “оплачена”, “отменена”)
+
+attachments
+
+comment
+
+created_at
+
+updated_at
+
+5. ADMIN PANEL (MUST BE SIMPLE AND BUILT-IN)
+
+Create an admin panel available via a separate URL, for example:
+/admin
+
+Requirements:
+
+Admin login (hardcoded admin password stored in Secrets).
+
+Table of all users with sortable columns.
+
+Table of all payment requests (with filters: by status, by user, by urgency).
+
+Ability for admin to:
+
+change any user’s balance
+
+approve USDT deposit
+
+mark deposit as received
+
+mark payment request as “оплачена”
+
+cancel any request
+
+All admin actions must instantly update the user’s view.
+
+Replit AI must also explain inside the code comments exactly:
+
+how to open admin panel
+
+how to log into it
+
+how to use it to modify user balances
+
+how to approve deposits
+
+6. REAL DEPOSIT SYSTEM — TRC20 ADDRESS
+
+Replace the test deposit with a real deposit flow.
+
+Deposit address:
+
+TDAaY316MmtuwuDhLfxNHBxqUAS4XkBNSJ
+
+User flow:
+
+User opens “Пополнить баланс”.
+
+App shows:
+
+USDT TRC20 network (in Russian)
+
+deposit address
+
+QR-code generated inside app
+
+button “Скопировать адрес”
+
+button “Открыть в TronLink” (optional)
+
+User taps “Я пополнил”.
+
+The system creates a pending deposit entry visible in the admin panel.
+
+Admin manually confirms the deposit.
+
+After admin confirmation:
+
+USDT is added to user’s available balance
+
+user receives notification inside the app.
+
+Later you can expand with Tron API, but for MVP — manual confirm via admin panel.
+
+7. ATTACHMENT SYSTEM — ADD CAMERA SUPPORT
+
+Currently attachments allow only file upload.
+Add a camera capture button next to the existing upload button.
+
+UI elements (in Russian):
+
+“Добавить фото (камера)”
+
+“Загрузить файл”
+
+Accept:
+
+PNG/JPG screenshot
+
+PDF
+
+Photo from camera (mobile WebApp)
+
+Make sure it works inside Telegram WebApp environment using:
+
+<input type="file" accept="image/*" capture="environment">
+
+8. REDESIGN “ИНСТРУКЦИЯ” PAGE
+
+Rework the design of the "Инструкция" page:
+
+Replace placeholders with relevant icons (restaurant, bill, utilities, QR code, online order).
+
+Use better spacing, alignment, and color hierarchy.
+
+Icons must visually match the Revolut-style minimalistic theme.
+
+Make the instruction well-structured and readable.
+
+The text must include:
+
+What you can pay:
+
+рестораны
+
+QR-коды на столах
+
+сервисы Tapper/Tappr
+
+Яндекс.Еда, Delivery Club, etc
+
+счета и счета-фактуры
+
+коммунальные услуги
+
+любые платежи юрлицам
+
+интернет-магазины по QR или счёту
+
+What you CANNOT pay:
+
+покупки, требующие мгновенной оплаты прямо на кассе
+
+где нельзя подождать хотя бы 5 минут
+
+Explanation of commissions:
+
+стандартная заявка = курс ЦБ РФ (0% надбавки)
+
+срочная заявка = курс ЦБ РФ +0.5%
+
+Clear structured formatting.
+
+9. FIX ALL SPACING & TYPOGRAPHY ON MAIN PAGE
+
+Rework the main screen to match modern UI quality:
+
+Fix spacing and alignment.
+
+Make numbers and currency symbols proportional (not 10× difference).
+
+Center elements properly.
+
+Ensure visual hierarchy is modern and clean.
+
+Use consistent sizes for h1/h2/body text.
+
+Use a neutral, modern font stack similar to Revolut.
+
+10. REMOVE ALL TEST-VERSION TEXT
+
+Delete:
+
+"тестовая версия" anywhere
+
+mock messages
+
+test disclaimers
+
+fake buttons
+
+temporary labels
+
+Everything must be production-ready.
+
+11. UPDATE PAYMENT FLOW
+
+The logic must work exactly as follows:
+
+User enters RUB amount.
+
+Check:
+
+minimum 3000 ₽
+
+maximum 100000 ₽
+
+amount ≤ available RUB balance
+
+Lock official CBR rate.
+
+Calculate USDT freeze:
+
+standard: sum_rub / rate
+
+urgent: sum_rub / rate * 1.005
+
+Freeze that USDT amount.
+
+After admin approves payment:
+
+move frozen amount → deducted permanently
+
+mark request as “оплачена”
+
+notify user
+
+12. TAB NAVIGATION FIX
+
+Ensure bottom tab navigation works correctly:
+
+User can freely switch tabs even inside the wizard flow.
+
+Wizard state must persist when user returns to “Главная”.
+
+No stacking screens below each other.
+
+Only one active screen on top at any time.
+
+13. VERIFY EVERYTHING
+
+Before finishing, you must:
+
+run a full internal test
+
+check that Telegram WebApp loads correctly
+
+check camera uploads
+
+check deposit flow
+
+check admin panel
+
+check rate fetching
+
+check navigation
+
+confirm no layout issues
+
+confirm all UI text is Russian
+
+Fix any issues automatically.

@@ -1,0 +1,227 @@
+I want you to transform my current design-only webapp into a fully functional, production-ready Telegram WebApp.
+You must keep ALL in-app text, labels, messages, buttons, and Russian UI exactly as they are (all text in Russian).
+Your job is to convert the existing design into a real working application with backend, session handling, Telegram bot integration, and hosting via Replit Deploy.
+
+This should become a real Telegram Mini App accessible from the bot’s menu and via the /start command, with all logic working, backend connected, and Telegram WebApp APIs wired correctly.
+
+Below are the exact requirements.
+Follow them strictly and sequentially.
+Do not skip or simplify anything.
+
+1. Analyze the current project
+
+Read all existing source code and UI components.
+
+Identify which parts are currently only static design.
+
+Identify what logic is missing to turn this into a functioning app.
+
+Keep all UI structure, screens, buttons, colours, and Russian texts exactly unchanged (unless I explicitly ask later).
+
+2. Set up a clean backend inside the same Replit project
+
+Create a new folder structure like:
+
+/server
+  index.ts (or index.js)
+  routes/
+  controllers/
+  models/
+  utils/
+
+/client   ← my existing design app
+
+
+Backend requirements:
+
+Use Node.js + Express.
+
+Add CORS, Helmet, Rate limiting.
+
+Create GET /health for bot verification.
+
+Serve static frontend via Express.
+
+Add minimal API endpoints for:
+
+user sessions
+
+balances
+
+“frozen” USDT amounts
+
+history of payment requests
+
+creating new payment requests
+
+attachments metadata
+
+notifications
+
+Store data in Replit DB or a simple JSON file, unless you detect that my project already uses a database.
+
+Everything must work in test mode, with mock balances, mock payments, mock USDT rates.
+
+3. Implement Telegram Bot + WebApp integration
+
+Create a /telegram folder:
+
+/telegram
+  bot.ts
+  webhooks.ts
+
+
+In this module you must:
+
+3.1 Create and configure a Telegram Bot
+
+Use node-telegram-bot-api OR pure Bot API via fetch.
+
+Allow me to enter BOT_TOKEN via Replit Secrets.
+
+3.2 Add /start handler
+
+When user launches /start, send a button:
+
+A WebApp button opening the Replit-deployed URL of my webapp.
+
+The button MUST be:
+
+text: "Открыть приложение"
+web_app: {
+  url: "<my Replit Deploy URL>"
+}
+
+3.3 Create “Menu Button” Telegram WebApp
+
+Configure bot so that Telegram app shows a persistent bottom-menu button opening my mini-app.
+
+This is done through setChatMenuButton.
+
+The menu button must also contain "Открыть приложение".
+
+3.4 Configure WebAppData handling
+
+When user clicks inside WebApp, use:
+
+Telegram.WebApp.initData
+
+Telegram.WebApp.sendData()
+
+Telegram.WebApp.ready()
+
+Validate initData signature on backend.
+
+3.5 Set up Webhook
+
+Use the Replit deployment domain.
+
+Automatically configure webhook after deployment.
+
+4. Connect the frontend to the backend
+
+You must:
+
+Replace all mock data with real API calls.
+
+Connect:
+
+balance fetching
+
+frozen USDT state
+
+transaction history
+
+creating payment requests
+
+sending attachments (images, PDFs, links)
+
+notifications
+
+Connect navigation state so wizard progress persists.
+
+Make bottom-tab navigation work globally (switch between tabs even while wizard is open, and return wizard state when returning to "Главная").
+
+All UI text stays in Russian — do NOT translate anything.
+
+5. Implement payment-request logic using test data
+
+Since this is a test (MVP) environment:
+
+Simulate USDT balance.
+
+Simulate freezing funds after request creation.
+
+Simulate request completion.
+
+Simulate push-style notifications via polling or server-sent-events.
+
+All numbers, limits, and errors must match the business logic already implemented in my app.
+
+6. Make the webapp fully Telegram-compatible
+
+You must implement all of the following:
+
+6.1 Add Telegram WebApp theme support
+
+Light/dark auto-theme from Telegram.
+
+Color variables.
+
+6.2 Disable scrolling bounce
+
+Use:
+
+Telegram.WebApp.disableVerticalSwipes();
+
+6.3 Add safe-webview paddings
+
+Add bottom padding under the tab bar so it never touches Telegram’s UI chrome.
+
+7. Deploy
+
+After building:
+
+Set up Replit Deploy correctly.
+
+Backend + Frontend must run in the same deployment.
+
+Output the final MiniApp URL.
+
+Automatically register webhook inside bot code.
+
+Verify that /start opens the app inside Telegram.
+
+Verify that the persistent bot menu button opens the app.
+
+8. Final verification
+
+Before finishing, perform an automated self-check:
+
+Open the WebApp inside Telegram.
+
+Verify all UI screens load with live data.
+
+Verify bottom navigation works.
+
+Verify wizard persists state when switching tabs.
+
+Verify payment creation works end-to-end.
+
+Verify that bot receives webhook events.
+
+Verify that initData is validated correctly.
+
+Verify that the app loads correctly from the menu button.
+
+Verify that the app loads correctly from /start.
+
+Verify that the app behaves correctly if Telegram is not present (open in browser fallback mode).
+
+If something fails, fix it automatically.
+
+9. VERY IMPORTANT
+
+All UI text inside the app must remain exactly in Russian.
+All English text is only for this prompt.
+Do not translate labels, buttons, placeholders, or error messages.

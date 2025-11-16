@@ -1,0 +1,198 @@
+Scope
+
+Update the existing Mini App prototype with three focused changes:
+
+Instruction screen: add a structured, friendly Russian guide describing what payments are supported/not supported, including examples (restaurants with QR/links like Tapper/Tappr, Яндекс.Еда, utilities, invoices to legal entities), timing constraints (≥5 minutes), market-rate conversion with 2% service fee baseline, and that “Стандартно (10–30 минут)” gives a 0.5% better rate. Include simple infographic-style blocks (visual cards/icons) without external assets.
+
+Free tab navigation during the payment wizard: bottom tabs remain tappable at all times; wizard state is preserved when switching away and back.
+
+Urgency copy + math: update labels and actual calculations so that:
+
+Срочно (5–10 минут) uses standard commission (2% baseline).
+
+Стандартно (10–30 минут) uses a 0.5% better rate for the user vs the urgent baseline (i.e., user spends ~0.5% less USDT).
+Keep the step-1 locked base rate logic. Use ceil to 2 decimals for USDT freezing.
+
+Do not change other flows or break current design; only extend/adjust as below.
+
+1) Instruction Screen — Replace content (Russian copy)
+
+Title: Инструкция
+
+Section card 1 — «Как это работает»
+Text (body):
+
+1) Пополняете баланс в USDT (TRC20).
+2) Создаёте заявку на оплату в рублях.
+3) Мы оплачиваем счёт за вас.
+Минимальный чек: 3 000 ₽. Максимальный чек: 100 000 ₽.
+
+
+Section card 2 — «Где удобно платить через приложение»
+Bulleted list:
+
+• Рестораны по QR-коду или ссылке (например, Tapper/Tappr, Яндекс.Еда).
+• Магазины и интернет-заказы, где есть QR-код или счёт.
+• Коммунальные и прочие услуги по счёту.
+• Любые счета от организаций (юрлица), где оплата идёт по реквизитам.
+
+
+Small hint (gray):
+Подходит для оплат, которые не требуют мгновенного подтверждения на кассе.
+
+Section card 3 — «Когда не подойдёт»
+Text:
+
+Если вы стоите на кассе и нужно оплатить прямо сейчас (сканировать QR-код на терминале), этот способ не подойдёт.
+Оплата через приложение занимает от 5 минут до нескольких часов — это нормально.
+
+
+Section card 4 — «Про курс и комиссию»
+Text:
+
+Перерасчёт в рубли происходит по рыночному курсу с учётом нашей комиссии 2%.
+Для «Стандартно (10–30 минут)» действует курс на 0,5% выгоднее по сравнению с «Срочно».
+Курс для вашей заявки фиксируется на первом шаге создания заявки и дальше не меняется.
+
+
+CTA (bottom):
+Button: Написать в Telegram
+
+Infographic styling guidance (no external images):
+
+Render these sections as separate rounded cards with simple inline icons:
+– «Как это работает» → ✅
+– «Где удобно платить…» → 🧾 / 🍽️
+– «Когда не подойдёт» → ⛔ / ⏳
+– «Про курс и комиссию» → 💱
+
+Use larger headings, short bullets, and soft accent separators. No external assets required.
+
+2) Free Tab Navigation During Wizard
+
+Requirement: The bottom tab bar (🏠 Главная, 🧾 История заявок, 📘 Инструкция, ⚙️ Настройки) must remain always tappable, even while the user is in the “Оплатить” wizard (any step).
+
+Behavior:
+
+Navigating away from the wizard must preserve all current wizard state (entered amount, chosen urgency, attachments, comment, locked rate).
+
+When the user returns to “Оплатить”, restore the exact step and data.
+
+Disallow only submit if required fields are missing; never block tab navigation.
+
+Implementation guidance:
+
+Lift wizard state to a top-level store (e.g., React context or global store) or persist to local storage/session storage keyed by user/session.
+
+On mount of the “Оплатить” screen, rehydrate from the store; on unmount, persist.
+
+Ensure no double-locking of the rate: lock once at Step 1 and keep it in the draft until submission or explicit cancel.
+
+3) Urgency Copy + Math Update
+3.1 Russian copy (replace the urgency step hints)
+
+Step 2 title: Выберите срочность обработки
+
+Options with sublabels:
+
+⚡ Срочно (5–10 минут)
+small note under option: Стандартная комиссия.
+
+⏱️ Стандартно (10–30 минут)
+small note under option: Курс на 0,5% выгоднее.
+
+Also show the same note in Step-4 summary if “Стандартно” is selected:
+Курс на 0,5% выгоднее.
+
+3.2 Math — precise rules
+
+Continue to lock the base market rate at Step 1:
+
+// At Step 1:
+const rate_locked_rub_per_usdt = currentMarketRateRubPerUsdt; // e.g., 90.00
+const BASE_FEE = 0.02;   // 2% baseline service fee (always applied)
+const STD_BONUS = 0.005; // 0.5% better than urgent baseline for "Стандартно"
+
+
+Compute raw USDT before fees:
+
+const usdt_raw = amount_rub / rate_locked_rub_per_usdt;
+
+
+For Срочно (5–10 минут) — “Стандартная комиссия” (2% total):
+
+const usdt_needed_urgent = usdt_raw * (1 + BASE_FEE); // 1.02x
+
+
+For Стандартно (10–30 минут) — 0.5% better vs urgent baseline:
+
+const usdt_needed_standard = usdt_raw * (1 + BASE_FEE - STD_BONUS); // 1.02 - 0.005 = 1.015x
+
+
+Rounding & freezing (same for both):
+
+const usdt_to_freeze = Math.ceil(usdt_needed_*100) / 100; // ceil to 2 decimals
+
+
+Persist to the request record:
+
+{
+  amount_rub,                      // ₽ requested
+  rate_locked_rub_per_usdt,        // locked on Step 1
+  urgency: 'urgent' | 'standard',
+  base_fee: 0.02,                  // stored for audit
+  standard_bonus: 0.005,           // stored for audit
+  usdt_frozen: usdt_to_freeze,     // after ceil
+  status: 'created' | 'processing' | 'paid' | 'cancelled',
+  attachments, comment, created_at
+}
+
+
+Balances:
+
+On submit:
+availableUSDT -= usdt_to_freeze;
+frozenUSDT += usdt_to_freeze;
+
+On cancel:
+availableUSDT += usdt_to_freeze;
+frozenUSDT -= usdt_to_freeze;
+
+On paid:
+totalUSDT -= usdt_to_freeze;
+frozenUSDT -= usdt_to_freeze;
+
+Home equivalents:
+
+Home Эквивалент в ₽ continues to show availableUSDT * currentDisplayedRate, while each request keeps its own locked rate.
+
+Validation remains:
+
+Min 3 000 ₽, Max 100 000 ₽.
+
+Amount must be ≤ current available RUB equivalent at Step 1.
+
+4) Minor UI/UX Finishes (keep it minimal)
+
+In Step 2, when toggling urgency, live-update the USDT estimate preview (below the options) using the new math, e.g.:
+Оценка к заморозке: {ZZ.ZZ USDT}
+
+In Step 4 summary, show:
+
+Сумма: {XXX ₽}
+
+Эквивалент в USDT: {ZZ.ZZ USDT}
+
+Срочность: Срочно / Стандартно
+
+If Стандартно → small note: Курс на 0,5% выгоднее.
+
+5) Deliverables
+
+Replace the Instruction screen content with the exact Russian copy above and infographic-style layout.
+
+Implement free tab navigation with full wizard state preservation.
+
+Update urgency labels and implement the 2% baseline / −0.5% standard bonus math with ceil(… , 2) for USDT freezing.
+
+Ensure History/Details reflect urgency and the stored usdt_frozen, with the locked rate.

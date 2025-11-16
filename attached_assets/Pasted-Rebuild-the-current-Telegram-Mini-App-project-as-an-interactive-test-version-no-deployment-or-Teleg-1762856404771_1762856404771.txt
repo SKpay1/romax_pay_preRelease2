@@ -1,0 +1,315 @@
+Rebuild the current Telegram Mini App project as an interactive test version (no deployment or Telegram webhook), simulating the full Mini App experience directly inside Replit’s preview window.
+
+The purpose is to allow clicking through and testing all screens (Главная, Пополнить, Оплатить, История заявок, Поддержка, Настройки) as if it were already opened inside Telegram.
+
+All app interface text must be in Russian,
+but all my developer instructions here are in English.
+
+Follow the structure, logic, and design specifications below carefully.
+
+🧭 App concept
+
+This is a Mini App prototype for paying in rubles (₽) via USDT (TRC20) balance.
+Users can top up, create payment requests, see history, and contact support.
+All logic is simulated — no blockchain, no backend API.
+The interface should look and behave like a modern Revolut-style wallet.
+
+The design reference (screenshot provided) shows the visual style:
+
+soft corners,
+
+minimalist layout,
+
+clean typography,
+
+airy spacing,
+
+white background with subtle shadows and blue accents.
+
+📱 Main navigation
+
+At the bottom, add a floating navigation bar with rounded corners and light shadow.
+Tabs (with icons and Russian labels):
+🏠 Главная, 🧾 История заявок, 🆘 Поддержка, ⚙️ Настройки.
+
+Each tab opens its own screen.
+
+🏠 1. Главная (Home)
+
+Top section:
+Card with greeting and description:
+
+Title: Привет!
+
+Subtitle: Плати в рублях, пополняя баланс в USDT (TRC20). Быстро, удобно, современно.
+
+Info cards (3 small blocks):
+
+Баланс в USDT: 120.00 USDT
+
+Курс USDT → ₽: 1 USDT ≈ 90.00 ₽
+
+Эквивалент в ₽: 10 800 ₽
+
+Main buttons:
+
+➕ Пополнить → opens the “Пополнить” screen.
+
+💳 Оплатить → opens the “Оплатить” wizard.
+
+Small grey text below:
+Для тестовой версии все операции эмулируются.
+
+💰 2. Пополнить (Top up)
+
+Title: Пополнить баланс USDT (TRC20)
+
+Label above address: Адрес для пополнения (TRC20):
+
+Box showing fake TRC20 address: TX1111111111111111111111
+
+Button: Скопировать адрес (no real function)
+
+New button:
+Я пополнил
+
+Behavior for test mode:
+
+When pressed → show loading animation (spinner or skeleton) for 3–4 seconds,
+then display confirmation screen:
+
+Large title: Отлично!
+
+Text: Видим ваше пополнение на 150 USDT.
+
+Button below: Вернуться на главную страницу (returns to Home).
+
+This simulates a balance update — increase virtual balance by +150 USDT.
+
+Small grey note below:
+В продакшене здесь запускается пересмотр баланса и проверка входящих транзакций. В этой тестовой версии пополнение эмулируется.
+
+💳 3. Оплатить (Create payment request)
+
+A 4-step wizard (each step with “Назад” and progress indicator).
+
+Step 1 — Amount
+
+Title: Укажите сумму в ₽
+
+Input field placeholder: Например, 2 500
+
+Validation rule:
+The amount cannot exceed the user’s ruble equivalent balance.
+If exceeded, show red warning text:
+Недостаточно средств. Доступно: {баланс ₽}. Пополните баланс или уменьшите сумму.
+
+Buttons:
+Далее, Отмена
+
+Step 2 — Urgency
+
+Title: Выберите срочность обработки
+
+Two buttons:
+⚡ Срочно (5–10 минут)
+⏱️ Стандартно (10–30 минут)
+
+Buttons:
+Далее, Назад
+
+Step 3 — Bill / Description
+
+Title: Прикрепите ссылку или описание счёта
+
+Multiline input field, placeholder:
+Вставьте ссылку на счёт/QR или опишите, что нужно оплатить
+
+Buttons:
+Далее, Назад
+
+Step 4 — Comment & Summary
+
+Title: Комментарий к заявке (необязательно)
+
+Placeholder: Например: оплатить без чаевых
+
+Display a small summary below:
+
+Сумма: {XXX ₽}
+
+Эквивалент в USDT: {ZZ.ZZ USDT}
+
+Срочность: {выбранная опция}
+
+Buttons:
+Отправить заявку, Назад
+
+After submission:
+Show success screen:
+
+Title: Заявка отправлена
+
+Text block:
+
+Спасибо! Мы получили вашу заявку.
+Сумма: {XXX ₽}
+Списано с баланса: {ZZ.ZZ USDT}
+Статус: ОТПРАВЛЕНА
+
+
+Button: Вернуться на главную страницу
+
+Upon sending, deduct the amount from the user’s test balance and add it to “История заявок”.
+
+🧾 4. История заявок (History)
+
+Title: История заявок
+
+Show a list of past requests (cards). Each card contains:
+
+Top line: Сумма: {XXX ₽} (bold)
+
+Small badge at top-right showing status.
+
+Below: Эквивалент: {ZZ.ZZ USDT} • Срочность: Срочно/Стандартно
+
+Below that (grey): Создано: {dd.mm.yyyy, HH:MM}
+
+Statuses (Russian, uppercase):
+ОТПРАВЛЕНА, В ОБРАБОТКЕ, ОПЛАЧЕНО, ОТКЛОНЕНО, ОТМЕНЕНО
+
+If no history exists, show:
+
+Title: Заявок пока нет
+
+Subtitle: Создайте первую заявку на главной странице.
+
+Button: На главную
+
+🆘 5. Поддержка (Support)
+
+Title: Поддержка
+
+Friendly text:
+Есть вопросы или что-то не получается? Наша поддержка с радостью поможет. Обычно отвечаем в течение 5–20 минут.
+
+Button: Написать в Telegram (simulate opening support chat).
+
+No email addresses. Only this single button.
+
+⚙️ 6. Настройки (Settings)
+
+Title: Настройки
+
+Show simple profile info:
+
+Имя в Telegram: @username
+
+Дата регистрации: 11.11.2025 (static or random for test)
+
+Button below: Очистить тестовые данные (resets local data: balance, history).
+
+Small grey note:
+В этой тестовой версии данные хранятся локально для демонстрации работы интерфейса.
+
+💡 Logic behavior (for testing mode)
+
+All data stored locally (JSON or in-memory).
+
+Exchange rate fixed: 1 USDT ≈ 90.00 ₽ (±0.3 random variation).
+
+Balance updates automatically after simulated top-up or payments.
+
+“Я пополнил” adds +150 USDT to balance after short fake loading.
+
+Validation: Payment amount must not exceed balance (in ₽).
+
+All text shown to the user stays in Russian.
+
+🎨 Visual & Design Guidelines
+
+Follow the Revolut-style layout exactly as in the provided reference image:
+
+Overall theme: light mode, soft gradients, minimal shadows.
+
+Colors:
+
+Background: #F7F8FA
+
+Card background: #FFFFFF
+
+Primary accent: #4169E1 or #3B82F6
+
+Text main: #111827
+
+Secondary text: #6B7280
+
+Divider: #E5E7EB
+
+Cards:
+
+Rounded corners (16–20px)
+
+Subtle shadow (blur 10px, opacity 10%)
+
+Padding 16–20px
+
+Buttons:
+
+Large, rounded (12–16px)
+
+Primary (blue background, white text)
+
+Secondary (light grey background)
+
+Use full width in forms.
+
+Typography:
+
+Use modern sans-serif (like Inter / SF Pro).
+
+Balances in large font (24–28px).
+
+Regular text 14–16px.
+
+Status badges:
+
+Green (Оплачено), Yellow (В обработке), Red (Отклонено).
+
+Rounded pills, light pastel shades.
+
+Navigation bar:
+
+Floating bottom nav (blurred background optional).
+
+Slight shadow, radius 24px.
+
+4 icons with text labels.
+
+Active item highlighted blue.
+
+Animation:
+
+Smooth fade transitions (150–200ms).
+
+Spinner when pressing “Я пополнил”.
+
+If anything looks uneven, sharp, or asymmetrical — make it symmetrical, soft, and consistent with Revolut’s clean grid-based design.
+
+🧩 Technical instructions
+
+Build everything inside a single interactive test screen within Replit.
+
+No need to connect Telegram, database, or deployment.
+
+All actions (top-up, create request, view history, etc.) should be clickable and functional locally.
+
+Ensure the navigation and transitions between screens work.
+
+Use simulated data and local state to demonstrate all logic.
+
+End of prompt.
+Build this interactive test Mini App entirely in Russian,
+using the structure and design above,
+so I can click through and visually test every feature directly inside Replit.

@@ -1,0 +1,223 @@
+Update the existing Mini App’s visual style to look more vibrant, premium, and engaging — while keeping it minimalist and Revolut-inspired.
+We’re not changing structure or logic — only improving colors, typography, layout proportions, and small micro-interactions.
+
+Use modern soft gradients, elegant fonts, and slightly richer contrasts.
+All text, buttons, and labels must remain in Russian, exactly as before.
+
+🧱 Global style changes
+🔹 1. Layout and proportions
+
+Increase the base padding inside containers to 24px on large cards, 20px on smaller elements.
+
+Reduce card shadow blur radius slightly (from 10px to 8px) but increase opacity to 15% for subtle depth.
+
+All corners (cards, buttons, inputs) should be 20px rounded, not 12–16px — smoother, softer look.
+
+Apply consistent grid spacing — use multiples of 4 (4px baseline grid).
+
+Inputs and buttons should be taller (min height 52px) for a premium touch.
+
+Bottom navigation bar: increase corner radius to 28px and shadow blur to 20px with opacity 12%.
+
+🔹 2. Colors (new palette)
+Element	Color	Notes
+Background	#F2F4F8	Light warm-neutral tone (less clinical than pure white).
+Card background	#FFFFFF	Keep white, but add a very subtle gradient (linear-gradient(180deg, #FFFFFF 0%, #F9FAFB 100%)).
+Primary accent	Gradient from #5C8EFF → #2D6BFF	Used on main buttons and highlights.
+Secondary accent	Gradient from #FFC371 → #FF5F6D	Used for accent states (urgent, warnings).
+Text main	#0F172A	Slightly darker gray-blue for contrast.
+Text secondary	#6B7280	For subtitles and hints.
+Divider	#E2E8F0	Softer neutral gray.
+Background for bottom nav	rgba(255,255,255,0.9) with blur 20px	Light glass effect.
+Shadows	rgba(15,23,42,0.05)	Consistent low-opacity shadow across UI.
+Success (оплачено)	#16A34A	Bright green.
+Warning (в обработке)	#F59E0B	Soft amber.
+Error (отклонено)	#EF4444	Red tone.
+🔹 3. Typography
+
+Use “Plus Jakarta Sans” or “Inter Variable” (fallback “SF Pro Display”).
+
+Set global font-weight scale:
+
+Titles → 700,
+
+Subtitles → 600,
+
+Body → 400,
+
+Labels and UI text → 500.
+
+Font sizes:
+
+Main title: 24–28px
+
+Section headers: 18px
+
+Normal text: 15–16px
+
+Secondary / meta: 13–14px
+
+Line height: 1.3–1.4 for readability.
+
+Use slight letter spacing (0.2px) for body text to add softness.
+
+Numerals (balances, sums): use tabular numeric spacing and color them #0F172A with 90% opacity.
+
+🔹 4. Buttons
+
+Primary buttons:
+
+Gradient background from #5C8EFF → #2D6BFF.
+
+Hover/active state → slightly darker (#255DFF).
+
+Text color always white.
+
+Rounded corners: 20px.
+
+Add soft shadow 0 4px 10px rgba(45,107,255,0.25).
+
+Secondary buttons:
+
+Background #E5E7EB.
+
+Text color #1E293B.
+
+On hover → background #D1D5DB.
+
+Disabled buttons (e.g., inactive “Далее”):
+
+Background #E2E8F0,
+
+Text #9CA3AF,
+
+No shadow.
+
+🔹 5. Inputs and form fields
+
+Inputs: white background, border radius 16px,
+border color #E2E8F0.
+
+On focus → border gradient #5C8EFF → #2D6BFF, shadow 0 0 6px rgba(45,107,255,0.25).
+
+Placeholder text color: #9CA3AF.
+
+Add small icon for fields that need clarity:
+
+₽ icon inside amount input.
+
+Paperclip icon for attachments.
+
+For error messages (min 3000, insufficient balance):
+
+Red text #EF4444, 14px, weight 500.
+
+Smooth fade-in animation (200ms).
+
+🔹 6. Cards & status tags
+
+Cards background: white gradient (#FFFFFF → #F9FAFB).
+
+Shadow: 0 4px 12px rgba(15,23,42,0.06).
+
+Title (e.g. “Сумма”) → #0F172A, bold 600.
+
+Value (e.g. “25 000 ₽”) → #0F172A, font-size 18–20px, bold 700.
+
+Status tag chips:
+
+Rounded (16px), padding 4px 12px.
+
+Colors:
+
+ОПЛАЧЕНО → green #DCFCE7 text #16A34A
+
+В ОБРАБОТКЕ → yellow #FEF9C3 text #CA8A04
+
+ОТКЛОНЕНО → red #FEE2E2 text #B91C1C
+
+ОТПРАВЛЕНА → blue #DBEAFE text #1D4ED8
+
+Small subtle shadow for depth.
+
+🔹 7. Navigation bar
+
+Floating design (slightly raised).
+
+Background: blurred white glass (backdrop-filter: blur(20px); background: rgba(255,255,255,0.9);).
+
+Icons:
+
+Use soft duotone icons (gray → blue when active).
+
+Active item label color → primary blue.
+
+Inactive → #9CA3AF.
+
+Add small animation when switching tabs:
+
+Scale active icon slightly (1.1x) with fade.
+
+🔹 8. Pop-ups and notifications
+
+Toast notifications (e.g., “Заявка оплачена”):
+
+Rounded 16px, background #F9FAFB,
+
+Border-left accent: 4px gradient (#5C8EFF → #2D6BFF).
+
+Subtle slide-up animation.
+
+Bell icon in header:
+
+Blue outline when unread notifications exist.
+
+Use same shadow glow rgba(45,107,255,0.25) for attention pulse.
+
+🔹 9. Gradients and highlights
+
+Add gentle background gradient to “Главная” header section:
+linear-gradient(180deg, #F8FAFF 0%, #F2F5FF 100%).
+
+For urgent payment options:
+
+Background gradient #FFF5EB → #FFE7D6.
+
+Text color #C2410C.
+
+For success screens (“Отлично!”):
+
+Use gradient #E0FBEA → #F9FFFB.
+
+Icon (checkmark) in circle with subtle glowing edge.
+
+🔹 10. Micro-interactions & animations
+
+Add fade/slide transition between steps of payment wizard.
+
+Buttons click: micro-shrink (0.96 scale) and release.
+
+Cards hover (if desktop): elevate shadow by +1 level (10px → 16px).
+
+Spinner animation for loading: use blue gradient ring.
+
+Notification bell pulse on unread event: 2s subtle “breathe” animation.
+
+💡 Final UX polish
+
+Add small back arrows (←) before “Назад” text in headers.
+
+Center all titles horizontally when possible.
+
+Align buttons always bottom of the viewport for easy reach.
+
+Add subtle divider line between header and content areas (1px solid #E5E7EB).
+
+Adjust contrast for placeholder and secondary text — it should remain visible even on slightly tinted backgrounds.
+
+✅ Deliverable
+
+Replit should apply these visual updates directly to the existing Mini App project.
+Do not touch logic or state management — only modify styling (CSS / Tailwind / theme).
+All Russian UI text must remain exactly the same.
+At the end, preview in the Replit window should show a visually richer, modern, Revolut-inspired wallet experience with soft gradients, beautiful typography, and balanced color contrast.

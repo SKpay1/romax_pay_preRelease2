@@ -1,0 +1,149 @@
+You are updating the existing Mini App.
+Goal: make the urgent option (⚡ Срочно) affect real calculations — not only UI.
+All user-visible text stays in Russian as already defined.
+Do not change screens or copy — only the math and stored values.
+
+1) Lock the base rate at Step 1
+
+At Step 1 of the “Оплатить” wizard:
+
+Read the current displayed rate currentRateRubPerUsdt (e.g., 90.00 ₽ for 1 USDT).
+
+Freeze it into the draft as rate_locked_rub_per_usdt.
+
+This locked base rate is used for all further calculations for this request (summary, freezing, history, refunds).
+
+2) Define the urgent fee and effective rate
+
+Urgent fee coefficient:
+
+const URGENT_FEE = 0.005; // +0.5%
+
+
+If the user chooses Стандартно:
+
+effective_rate = rate_locked_rub_per_usdt;
+usdt_needed = RUB_amount / effective_rate;
+
+
+If the user chooses Срочно (5–10 минут):
+Apply +0.5% fee to the USDT amount (worse for the user, they spend more USDT):
+
+effective_rate = rate_locked_rub_per_usdt; // stays the same as locked
+usdt_needed = (RUB_amount / effective_rate) * (1 + URGENT_FEE);
+// i.e. multiply USDT by 1.005
+
+
+Keep the UI hint: «Курс с доп. комиссией 0,5%.» under the Срочно option and in Step-4 summary.
+
+Rationale: adding +0.5% as a fee on the USDT side guarantees the user spends more USDT for urgent processing.
+
+3) Rounding rules (very important)
+
+Compute usdt_needed in full precision, then round up to 2 decimals (ceiling) to avoid underfunding:
+
+usdt_to_freeze = ceil(usdt_needed * 100) / 100;
+
+
+Store this exact usdt_to_freeze on the request and use it everywhere (freeze, history, refunds).
+
+4) Freezing on submit
+
+On submit (“Отправить заявку”):
+
+Freeze funds using the computed usdt_to_freeze:
+
+availableUSDT -= usdt_to_freeze;
+frozenUSDT += usdt_to_freeze;
+
+
+Success screen already says «Заморозили на балансе: {ZZ.ZZ USDT}» — display usdt_to_freeze.
+
+5) History payload (store for each request)
+
+Save the following fields on the request record:
+
+{
+  amount_rub: number,                       // requested ₽ amount
+  rate_locked_rub_per_usdt: number,         // locked at Step 1
+  urgent: boolean,                          // true if Срочно, else false
+  urgent_fee: 0.005 | 0,                    // 0.005 for urgent, 0 otherwise
+  usdt_frozen: number,                      // usdt_to_freeze after rounding up
+  status: 'created' | 'processing' | 'paid' | 'cancelled',
+  created_at: ISOString,
+  attachments: [...],
+  comment: string
+}
+
+
+In the History card and Request Detail show:
+
+«Сумма: {XXX ₽}»
+
+«Эквивалент в USDT: {usdt_frozen} USDT»
+
+«Использованный курс: {rate_locked_rub_per_usdt} ₽»
+
+If urgent: small note «Курс с доп. комиссией 0,5%.»
+
+6) Paid / Cancel math
+
+Paid (Оплачено):
+
+frozenUSDT -= usdt_frozen;
+totalUSDT  -= usdt_frozen;   // permanently spent
+// available stays unchanged
+
+
+Cancelled (Отменено):
+
+availableUSDT += usdt_frozen; // full return
+frozenUSDT    -= usdt_frozen;
+
+
+On both transitions, update Home:
+
+«Доступный баланс в USDT» = availableUSDT
+
+«Заморожено: … USDT» = frozenUSDT
+
+«Эквивалент в ₽» = availableUSDT * (current displayed rate on Home)
+
+(Display on Home may use the current live-ish rate; the request itself always uses its locked rate.)
+
+7) Validation remains
+
+Min 3 000 ₽, Max 100 000 ₽.
+
+Amount must be ≤ available RUB equivalent computed from current Home rate at Step 1.
+
+If Срочно — only the freezing math changes (extra 0.5% on USDT); validations stay the same.
+
+8) Examples (for tests)
+
+Example A (Standard):
+
+amount_rub = 30 000, rate_locked = 90.00
+
+usdt_needed = 30000 / 90 = 333.333… → ceil to 2dp → 333.34 USDT
+
+Example B (Urgent):
+
+same inputs but urgent
+
+raw usdt_needed = (30000 / 90) * 1.005 = 335.000… → ceil → 335.00 USDT
+
+9) UI text (unchanged Russian strings)
+
+Keep the existing Russian copy exactly as before (Срочно note: «Курс с доп. комиссией 0,5%.»).
+No new labels are needed.
+
+10) Deliverable
+
+Implement the exact math above.
+
+Ensure the frozen amount and all subsequent operations use the urgent 1.005 factor when Срочно is selected.
+
+History and details must reflect the locked rate, the urgent flag, and the final usdt_frozen.
+
+Refunds and paid transitions must modify balances using the same stored usdt_frozen.

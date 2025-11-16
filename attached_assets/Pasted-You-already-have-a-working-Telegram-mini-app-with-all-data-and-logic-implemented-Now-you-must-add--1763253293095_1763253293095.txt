@@ -1,0 +1,287 @@
+You already have a working Telegram mini app with all data and logic implemented.
+
+Now you must add a full internal USDT TRC20 processing system WITHOUT any third-party processors.
+
+You must:
+1) Start with a detailed PLAN (“Планировать”) describing all steps.
+2) Then implement everything step-by-step.
+3) Explain each step to me in simple language.
+
+All interface text must remain in Russian.  
+Never hardcode numeric values (amounts, balances, rates, frozen amounts).  
+Only use dynamic data bindings.
+
+==================================================
+PART 1 — GLOBAL GOAL
+==================================================
+
+The goal is to implement an automated crypto-processing system inside the existing Telegram mini app, where:
+
+• User presses “Пополнить”
+• User enters how many USDT they want to deposit
+• System validates the input (min 30 USDT, max 20 000 USDT)
+• System checks whether there is already an open deposit request with the same amount
+• If no open request exists → the user gets EXACT amount  
+• If another open request already exists with the same amount → the system generates a unique slightly smaller “payable_amount” (up to 4 decimals)
+• System assigns one of the fixed TRC20 deposit wallets (shared wallets)
+• System shows user:
+   - wallet address (TRC20)
+   - requested amount
+   - unique payable amount
+   - countdown timer 10 minutes
+• The user must transfer EXACTLY the payable_amount
+• A blockchain scanner watches incoming USDT TRC20 transfers to our wallets
+• When a match is found (wallet + amount) → credit user’s balance → close the deposit
+• If the user leaves the app or switches pages, the deposit must remain active until:
+   - confirmed, OR
+   - expired (10 minutes)
+
+Address for receiving deposits (master wallet):  
+**THVyqrSDMBvpibitvTt4xJFWxVgY61acLu**
+
+This will be the ONLY deposit wallet for now. Later we may extend to up to 5.
+
+==================================================
+PART 2 — FUNCTIONAL REQUIREMENTS
+==================================================
+
+### 1. “Пополнить” Flow (Frontend)
+
+When user taps “Пополнить”:
+
+1) Show input field:  
+   “На сколько USDT вы хотите пополнить кошелёк?”
+2) Validate:
+   - MIN 30 USDT  
+   - MAX 20 000 USDT  
+   If out of range → show Russian warning and block next step.
+3) On pressing “Продолжить”:
+   - Send this amount to backend (POST /api/deposit/create)
+
+### 2. Backend logic for deposit creation
+
+Backend must:
+
+1) Validate again (30–20000 USDT)
+2) Check if ANY open deposit request (status = pending/awaiting_payment) exists with EXACT same amount
+3) If none:
+      payable_amount = requested_amount (with .0000)
+   If exists:
+      payable_amount = requested_amount - small delta (0.0001, 0.0002, 0.0003…)  
+      payable_amount MUST:
+       • be strictly less than requested_amount  
+       • have max 4 decimals  
+       • be unique among open deposits  
+       • never drop more than 0.01 from original requested_amount
+4) Create new deposit entry with:
+   - user_id
+   - wallet_address = master wallet (given above)
+   - requested_amount
+   - payable_amount
+   - status = “pending”
+   - expires_at = now + 10 minutes
+5) Return:
+   - TRC20 wallet address
+   - requested_amount
+   - payable_amount
+   - expires_at (for timer)
+
+### 3. Frontend after deposit creation
+
+Show screen:
+
+“Вы запросили пополнение на <requested_amount> USDT.  
+Переведите ровно <payable_amount> USDT в сети TRC20 на этот адрес:  
+<wallet_address>  
+
+❗Сумма должна совпадать до 4 знаков после запятой.  
+⏳ У вас есть 10 минут для перевода.”
+
+Also show:
+• QR code to the address  
+• A live countdown timer (10 min)
+
+User may leave this screen, but:
+
+→ The deposit must remain active in background  
+→ The user must see it in “История транзакций” as “Активный депозит” until confirmed or expired
+
+### 4. Deposit persistence
+
+If user leaves the app or closes Telegram:
+- Deposit stays open until:
+   • blockchain scanner confirms payment, OR
+   • expires in 10 minutes
+
+### 5. Deposit expiration
+
+When 10 minutes pass:
+- Automatically set deposit.status = “expired”
+- After expiration, its payable_amount can be reused in future
+
+### 6. Blockchain Scanner (USDT TRC20)
+
+Implement TRC20 event scanner that runs every 10–20 sec:
+
+1) Connect via TronWeb using `TRON_RPC_URL` and (optionally) API key
+2) Monitor `Transfer` events for USDT TRC20 contract
+3) Filter:
+   - `to == master wallet`
+4) Convert event amount to decimal USDT (6 decimals → 4 decimals)
+5) Try matching:
+   Find deposit where:
+    - status = “pending”/“awaiting_payment”
+    - payable_amount == received amount
+    - wallet_address == master wallet
+    - expires_at > now
+6) If match found:
+    - set deposit.status = “confirmed”
+    - set tx_hash
+    - credit user balance
+    - log confirmation
+7) If no match:
+    - ignore (user might have paid wrong amount)
+
+Scanner must be **idempotent**:
+- Never double-credit the same tx hash
+
+### 7. Admin Panel changes
+
+In Admin Panel:
+
+Add new tab “Депозиты” with two sections:
+1) “Активные депозиты”
+   - list of pending deposits  
+   - shows:
+       • user  
+       • requested_amount  
+       • payable_amount  
+       • wallet  
+       • created_at  
+       • expires_at (show countdown)
+
+2) “История депозитов”
+   - list of all completed, expired, or cancelled deposits
+
+Admin can:
+- view all deposits
+- create operator accounts
+- see operator activity
+- NOT credit or edit deposits manually (except maybe changing status to cancelled)
+
+### 8. Operator Panel
+
+Create a separate Operator Panel (different URL).
+
+Operator login created manually by admin.
+
+Operator sees:
+- all deposits (active + history)
+- same information as admin  
+BUT operators:
+- CANNOT change user balances
+- CANNOT manually credit deposits
+- CAN mark deposits as “отклонён” (optional)
+- CAN attach notes/comments (optional)
+
+### 9. Design Requirements (IMPORTANT)
+
+Apply the NEW visual system to:
+- main screen  
+- history  
+- instruction  
+- settings  
+- payment flow  
+- admin UI  
+- operator UI
+
+Rules:
+- Same soft-mint banking style
+- Same color palette
+- Same shadow system
+- Same typography
+- Same button styles
+- Same spacing/radius system
+
+Use the design specification from previous instructions:
+• light warm background  
+• mint balance card  
+• teal accents  
+• soft shadows  
+• rounded containers  
+• consistent layout  
+• all text in Russian
+
+### 10. Navigation requirement
+
+From ANY screen (including during deposit creation), pressing “Главная” in bottom navigation must always return user to main screen — without losing their active deposit or wizard state.
+
+This must be implemented.
+
+==================================================
+PART 3 — IMPLEMENTATION STEPS
+==================================================
+
+Before writing code, produce a **PLAN**:
+
+### PLAN MUST INCLUDE:
+
+1) New database fields/tables:
+   - deposits
+   - tron_scan_state
+   - operator_users (table for creating operator accounts)
+
+2) Deposit creation logic:
+   - amount validation
+   - uniqueness check
+   - payable_amount generation algorithm
+
+3) Blockchain scanner logic:
+   - schedule
+   - last processed block storage
+   - matching algorithm
+   - idempotency
+
+4) UI adjustments:
+   - main screen redesign
+   - payment wizard redesign
+   - deposit screen with countdown
+   - updated History (История транзакций)
+   - Admin Panel (“Депозиты”)
+   - Operator Panel
+
+5) Navigation fix:
+   - Bottom tabs must override wizard navigation safely
+
+6) Testing plan:
+   - unit testing for payable_amount uniqueness
+   - scenario tests for deposit creation & expiration
+   - end-to-end flow
+
+==================================================
+PART 4 — IMPORTANT CONSTANTS
+==================================================
+
+MASTER WALLET (TRC20):
+**THVyqrSDMBvpibitvTt4xJFWxVgY61acLu**
+
+USDT contract (TRC20):
+(Ask me if you need it; you probably know it.)
+
+Min deposit: **30 USDT**  
+Max deposit: **20 000 USDT**  
+Deposit lifetime: **10 minutes**  
+Decimal precision: **≤ 4 digits after decimal point**
+
+==================================================
+PART 5 — NOW DO THIS
+==================================================
+
+1) First, produce the full PLAN.
+2) Wait for my confirmation.
+3) After confirmation, start implementing everything step by step.
+4) After each step — explain in simple language what happened.
+
+Do NOT write code without a plan first.
+Do NOT break existing payment logic.
+Do NOT invent new labels or screens — only redesign visually.

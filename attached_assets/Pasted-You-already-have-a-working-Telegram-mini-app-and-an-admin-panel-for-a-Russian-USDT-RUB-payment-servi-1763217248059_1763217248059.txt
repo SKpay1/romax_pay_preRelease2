@@ -1,0 +1,425 @@
+You already have a working Telegram mini app and an admin panel for a Russian USDT→RUB payment service.
+All data models, logic, and API integration are already implemented and working.
+
+Your task now is twofold:
+
+Create a detailed implementation plan using the “Plan” tool (break the work into clear steps).
+
+Then execute that plan step by step, updating both the mini app UI and the admin/operator panels according to the instructions below.
+
+Very important constraints:
+
+Do NOT change any business logic, routing, or data structures.
+
+Do NOT hardcode any numeric values such as balances, exchange rates, or frozen amounts in text. Always use existing variables / bindings.
+
+Do NOT modify button labels, Russian copy or flows, except where explicitly requested.
+
+All user-facing text must remain in Russian.
+
+PART 1 — UI REDESIGN (DESIGN SYSTEM + LAYOUT)
+
+Below is the design brief. Apply it to the main screen first, then to all other screens (history, instruction, settings, payment flow, admin UI, operator UI). This is design only: CSS, layout, components and visual hierarchy.
+
+1. Overall Visual Style
+
+General vibe: soft, calm, premium fintech, similar to Revolut or a modern European neobank.
+
+Mode: light mode only.
+
+Visual language: soft cards, rounded corners, gentle shadows, minimal outlines.
+
+No harsh borders; elements are separated by shadows, spacing and subtle lines.
+
+The UI must feel serious and trustworthy, not playful or cartoonish.
+
+2. Color System
+
+Use a single coherent palette and reuse it across all screens:
+
+App background
+
+Very light warm off-white, e.g. #F7F5F1 (can be slightly adjusted but must stay warm and very light).
+
+Applied to the whole screen background.
+
+Main outer card (white container on the main screen)
+
+Background: soft white, #FFFFFF or slightly warm white aligned with the global background.
+
+This is the main panel that contains the content on the balances screen.
+
+Primary accent card (USDT balance)
+
+Background: soft mint green, e.g. #DFF9EB (light, not neon).
+
+Text color on this card: dark teal / blue-green, same as the primary heading color.
+
+Rate card (“1 USDT ≈ … ₽”)
+
+Background: deep teal / blue-green, e.g. #0B3D4A.
+
+Text: white #FFFFFF.
+
+Icon (trend arrow) on the left in white.
+
+Equivalent in ₽ card
+
+Background: white #FFFFFF.
+
+Title text: dark teal (same as primary headings).
+
+Main number text: the same dark teal.
+
+Caption text under the number: mint / teal accent, e.g. #4AB7A5.
+
+Buttons
+
+Primary button “Оплатить”:
+
+Background: deep teal #0B3D4A (same as rate card), optional very subtle vertical gradient (slightly lighter at the top).
+
+Text: white.
+
+No bright border, use a soft shadow instead.
+
+Secondary button “Пополнить”:
+
+Background: white.
+
+Border: mint accent #4AB7A5.
+
+Text: mint accent #4AB7A5.
+
+Pressed state: very light mint fill.
+
+Bottom navigation bar
+
+Background: white.
+
+Top divider line: very light gray #E4E4EA.
+
+Inactive icons and labels: medium gray #9AA0A8.
+
+Active tab:
+
+Icon and label in teal #0B3D4A.
+
+Subtle underline / small mint dot under the active label.
+
+Text colors
+
+Main headings and key numbers: dark teal #0B3D4A.
+
+Body text: slightly softer dark gray-blue #1E2933.
+
+Secondary captions (help text, hints): desaturated teal or gray #7BA1A0.
+
+Reuse these colors consistently across all screens: main, history, instruction, settings, wizard forms, admin UI, operator UI.
+
+3. Typography
+
+Use a modern, clean sans-serif font similar to SF Pro or Inter.
+
+All copy is in Russian.
+
+Suggested typographic hierarchy (for an iPhone 17 Pro–like viewport, adjust responsively):
+
+Large balance number: extra large, bold (around 40–44 px).
+
+Card titles (e.g. «Доступный баланс», «Эквивалент в ₽»): 18–20 px, semi-bold.
+
+Card subtitles and labels («USDT», «Заморожено: …», «1 USDT ≈ … ₽»): 14–16 px, regular.
+
+Bottom nav labels («Главная», «История», «Инструкция», «Настройки»): 12–13 px, medium.
+
+Use a line-height of ~1.2–1.3 and avoid cramped text.
+
+4. Radii, Spacing, Shadows
+
+Corner radii
+
+Outer big white panel: 28–32 px.
+
+Inner cards (balance, rate, equivalent): 18–24 px.
+
+Buttons: 18–24 px (same feel as cards).
+
+Bottom navigation bar: top corners rounded 20–28 px if it is a separate bottom panel.
+
+Spacing
+
+Safe area padding from screen edges: 16–20 px.
+
+Vertical gaps between cards: 12–16 px.
+
+Vertical padding inside cards: 16–20 px.
+
+Horizontal gap between “Пополнить” and “Оплатить” buttons: 12–16 px.
+
+Shadows (very soft)
+
+Cards: subtle drop shadow like 0 12px 30px rgba(0, 0, 0, 0.06).
+
+Primary button “Оплатить”: slightly stronger shadow to emphasize it as main action.
+
+No hard shadows or sharp edges.
+
+5. Main Screen Layout (Balances)
+
+This describes only layout and styling, not data.
+
+Inside the large rounded white panel on the main screen:
+
+First mint card — balance
+
+Full width, rounded.
+
+Center-aligned text:
+
+Title line: «Доступный баланс» (center).
+
+Large line below: the current balance amount (from data, without any hardcoded digits).
+
+Label below: «USDT».
+
+At the bottom of this mint card: a full-width pill with slightly darker mint or subtle overlay:
+
+Left: lock icon.
+
+Right/center: text «Заморожено: … USDT» (value from data, no hardcoded numbers).
+
+Card text vertically and horizontally balanced.
+
+Second card — rate
+
+Dark teal card.
+
+Left: small trend arrow icon.
+
+Right: text «1 USDT ≈ … ₽» (rate from existing data).
+
+Contents vertically centered.
+
+Third card — equivalent in ₽
+
+White card.
+
+Title on top center: «Эквивалент в ₽».
+
+In the middle: big RUB equivalent amount (from data).
+
+Subtitle below in mint color: «Курс фиксируется при создании заявки».
+
+Actions row — buttons
+
+Placed below the cards, inside the same white panel.
+
+Two buttons side by side, equal width:
+
+Left secondary outlined mint button: label «Пополнить».
+
+Right primary filled teal button: label «Оплатить».
+
+Each button height should be at least 48 px.
+
+Corner radii same as inner cards.
+
+Keep 12–16 px gap between buttons.
+
+Bottom navigation bar
+
+Outside the white panel, attached to the bottom.
+
+Four items:
+
+«Главная» (active on this screen)
+
+«История»
+
+«Инструкция»
+
+«Настройки»
+
+Minimal outline icons: home, clock/list, book, gear.
+
+Active tab “Главная” uses teal color and a small mint indicator.
+
+6. Apply This Design to Other Screens
+
+Keep all existing logic and structure, only restyle as per the design system above.
+
+A) История / История транзакций
+
+Bottom tab stays named «История».
+
+The header/title inside the screen should be «История транзакций».
+
+Use a list of small white cards with soft shadows and rounded corners.
+
+Each transaction card:
+
+Primary text (type/merchant) in dark teal.
+
+Secondary text (date, details) in gray.
+
+Status as a rounded pill:
+
+Mint/green for «Оплачено»,
+
+Soft orange for «В обработке»,
+
+Soft red for «Отклонено».
+
+B) Инструкция
+
+Content in a scrollable white panel.
+
+Split into separate cards with headings:
+
+«Что можно оплачивать»
+
+«Что нельзя оплачивать»
+
+«Если есть вопросы»
+
+«Как мы считаем курс» (this block should be visually placed at the bottom of the instruction screen).
+
+Each block is a white card with title and body text styled using the same typography and spacing rules as on the main screen.
+
+C) Настройки
+
+Use the same white panel + cards approach.
+
+Each setting row is a white clickable row or small card with an outline icon, title, and optional subtitle.
+
+Switches and toggles use mint as “on” color.
+
+D) Payment flow steps (wizard)
+
+Screens like «Укажите сумму в ₽», attachment of bill, confirmation etc.
+
+Use the same white cards, spacing, typography and button styles.
+
+The wizard header/title and step content are inside cards, consistent with the main screen.
+
+E) Admin UI and Operator UI
+
+Reuse the same teal/mint palette and typography.
+
+Tables or lists of requests are rendered as white cards or rows in a larger layout, with soft shadows and small status badges.
+
+Admin UI can be more compact, but must clearly look like the same product family.
+
+PART 2 — UX / FLOW CHANGES
+
+Beyond the visual redesign, implement the following behavioral and structural changes, still without changing core business logic.
+
+1. History Screen Title
+
+The bottom tab label stays «История».
+
+Inside that section, the visible page title (if any header is shown) must be «История транзакций».
+
+2. Navigation back to the main screen
+
+Current issue:
+If the user has started creating a payment request (wizard) and is, for example, on the screen «Укажите сумму в ₽», pressing the bottom tab «Главная» does not return to the main screen — only the back button works.
+
+Required behavior:
+
+From any step or screen inside the app (including any step of the payment wizard), pressing the bottom tab «Главная» must always take the user back to the main balances screen.
+
+If the user has an in-progress request:
+
+Either keep the progress stored so they can resume later, or follow your current logic; but do not break or duplicate existing data.
+
+Do not change business rules; just adjust navigation so the tab reliably returns to the main screen.
+
+3. Payments section: “Активные платежи” and “История”
+
+Wherever you currently show the list of payment requests (in the mini app or admin UI):
+
+Introduce two internal subsections / tabs within the payments area:
+
+«Активные платежи» — all requests that are still in progress / not finalized.
+
+«История» — all completed / canceled / rejected requests.
+
+All completed or canceled requests must automatically appear in «История».
+
+«Активные платежи» shows only ongoing requests, so operators and admins don’t lose them in the general list.
+
+Apply this split both where users see their payments (if applicable) and in the internal admin/operator interfaces where requests are processed.
+
+4. Admin Panel: Operators Management
+
+Extend the current admin panel (for the main admin) with an «Операторы» section:
+
+Only the admin can access this section.
+
+In «Операторы», the admin can:
+
+Create operator accounts.
+
+Set a login (username) and password for each operator.
+
+View the list of existing operators.
+
+Optionally activate/deactivate an operator.
+
+5. Separate Operator Interface
+
+Create a separate interface (separate route / page) for operators:
+
+Access:
+
+A dedicated URL / route for operators (e.g. /operator or similar).
+
+On that page, there is a login form where the operator logs in using the login and password set by the admin.
+
+After login, the operator sees an interface focused on payment requests:
+
+They can see all requests: both active and historical, using the same “Активные платежи” / “История” split as described above.
+
+For each request, they must have the same operational actions as in the admin panel:
+
+mark as paid / completed,
+
+reject / cancel,
+
+leave comments,
+
+attach additional files/links.
+
+Important restriction:
+
+Operators must not have access to deposit management or balance editing.
+
+All features related to deposits, manual balance changes, or any “money in/out” controls remain exclusively in the admin panel and are hidden from operators.
+
+Visually, the operator UI should use the same design system as the admin UI and the mini app (teal/mint palette, cards, status badges).
+
+6. Testing and Self-Check
+
+After implementing all of the above:
+
+Use the Replit preview to:
+
+Check the main screen UI matches the design brief (colors, spacing, typography, card structure, buttons).
+
+Verify that all screens (main, history, instruction, settings, payment flow, admin UI, operator UI) follow the same design language.
+
+Functionally test:
+
+The bottom tab «Главная» always returns to the main screen, even from deep inside the payment wizard.
+
+The payments section correctly separates «Активные платежи» and «История», with correct items in each.
+
+Admin can create operator accounts in «Операторы», and operators can log in via their separate interface.
+
+Operators can manage requests (approve, reject, comment, attach) but cannot change deposits or balances.
+
+Document any assumptions you make in comments or in a short note at the end of the plan.
+
+Again: first use the “Plan” feature to outline all steps (UI redesign + UX/admin changes), then implement them step by step following this brief.

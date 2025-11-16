@@ -1,0 +1,194 @@
+You are updating the existing Mini App.
+Focus ONLY on tab navigation behavior and wizard state persistence.
+Do not change business logic (amounts, balances, statuses, limits, fees).
+
+Current bug (must be fixed)
+
+When the user is on the payment wizard (“Оплатить”) and taps another bottom tab (e.g. История, Инструкция, Настройки):
+
+The new tab content is rendered below the wizard on the same page,
+
+The wizard remains visible on top, and the new tab appears underneath, which is incorrect.
+
+Desired behavior
+
+The bottom tab bar (Главная, История, Инструкция, Настройки) must work as top-level navigation:
+
+At any step of the payment wizard (amount, urgency, attachments, comment), if the user taps another tab:
+
+The app should navigate away from the wizard.
+
+The new tab’s screen must open instead of the wizard, not underneath.
+
+When the user later taps Главная again:
+
+If there is an unfinished payment wizard draft, the app should restore the wizard exactly where the user left it (same step, same inputs), on top of the Главная tab content.
+
+No progress should be lost.
+
+In other words:
+
+The bottom tabs switch between full screens, not “append” content below the current screen.
+
+The payment wizard is part of the Главная tab, not a parent that wraps all other tabs.
+
+Implementation requirements
+1) Single active screen at a time
+
+Ensure that at any moment only one main screen is rendered:
+
+either Главная (with or without wizard),
+
+or История,
+
+or Инструкция,
+
+or Настройки.
+
+When the active tab changes:
+
+Unmount the previous screen’s main container,
+
+Mount only the selected tab’s main container.
+
+Do not render a tab’s content inside the wizard’s DOM tree.
+Avoid nested layouts where the wizard component wraps all tabs.
+
+If you are using React (or similar), the structure should be:
+
+<App>
+  <MainLayout>
+    <TabContent> {/* switches between four views */}</TabContent>
+    <BottomTabBar />
+  </MainLayout>
+</App>
+
+
+Where TabContent conditionally renders one of:
+
+<HomeScreen /> (Главная — which itself can show either the default home view or the wizard overlay),
+
+<HistoryScreen />,
+
+<InstructionScreen />,
+
+<SettingsScreen />.
+
+Do not place <HistoryScreen />, <InstructionScreen />, etc. inside the wizard component.
+
+2) Wizard as part of the Home tab, not a wrapper
+
+The payment wizard should be logically part of the Главная tab:
+
+Главная has two states:
+
+normal home state (balance, buttons),
+
+wizard state (steps 1–4).
+
+Implement it as:
+
+<HomeScreen>
+  {wizardDraft.active ? <PaymentWizard draft={wizardDraft} /> : <HomeDefault />}
+</HomeScreen>
+
+
+Where wizardDraft is stored in a global store (see below).
+
+Do not make the wizard a global overlay that wraps the entire app including tabs.
+It should render only when the active tab is Главная.
+
+3) Preserve wizard state across tab switches
+
+Create a global wizard draft state, e.g.:
+
+{
+  active: boolean,
+  step: 1 | 2 | 3 | 4,
+  amountRub: number | null,
+  lockedRate: number | null,
+  urgency: 'urgent' | 'standard' | null,
+  attachments: Attachment[],
+  comment: string
+}
+
+
+When the user starts “Оплатить”, set wizardDraft.active = true and step = 1.
+
+On each change (amount, urgency, attachments, comment), update wizardDraft in the global store (context, Redux, Zustand, etc.).
+
+When the user taps another tab, do not reset wizardDraft. The wizard component will be unmounted, but the data stays in the global store.
+
+When the user taps Главная again:
+
+Check wizardDraft.active.
+
+If false → show normal home screen.
+
+If true → show the wizard component and restore the current step and all fields from wizardDraft.
+
+When the user successfully submits a request or explicitly cancels the wizard, reset wizardDraft to its initial state.
+
+4) Make bottom tabs fully clickable
+
+Ensure that:
+
+No overlay, modal, or container on the wizard screen covers or intercepts pointer events for the bottom tab bar.
+
+z-index of the bottom tab bar is higher than content but the bar is outside of the wizard container.
+
+There is no CSS like position: fixed with full-screen overlay from the wizard that blocks clicks to the tab bar.
+
+You can verify this by:
+
+Inspecting the DOM structure: the bottom bar should be a sibling, not a child, of the wizard content.
+
+Making sure the tab bar has its own clickable area not covered by other elements.
+
+Testing scenario (explicitly perform this)
+
+After making changes, manually test the following scenario inside the running app:
+
+Go to Главная.
+
+Tap Оплатить, enter a valid amount, go to the urgency step.
+
+On the urgency step, tap История (bottom tab):
+
+The wizard disappears.
+
+The История screen occupies the full content area above the tab bar.
+
+Tap Инструкция:
+
+The Инструкция screen fully replaces История.
+
+Tap Настройки, then Инструкция, then История again — verify all switch correctly and no wizard appears.
+
+Now tap Главная:
+
+The Главная screen opens.
+
+The payment wizard appears exactly on the same step and with the same data that you had before leaving (urgency step in this example).
+
+Finish the wizard (or cancel it) and confirm that after finishing/cancelling, tapping away and back to Главная no longer shows the wizard (only the default home view).
+
+If at any point:
+
+a tab’s content appears below the wizard, or
+
+the wizard does not reappear on Главная with saved state,
+
+then adjust the layout and state management until the behavior matches this specification.
+
+Deliverable
+
+Bottom tabs (Главная, История, Инструкция, Настройки) act as exclusive, top-level screens.
+
+The payment wizard is rendered only as part of the Главная tab, not wrapping or containing other tabs.
+
+Switching tabs never stacks content vertically; exactly one screen is visible above the tab bar at any time.
+
+Wizard progress is fully preserved across tab switches, and restored when returning to Главная.
+
+Do not change user-visible Russian texts or business rules; only fix the navigation/layout/state as described.

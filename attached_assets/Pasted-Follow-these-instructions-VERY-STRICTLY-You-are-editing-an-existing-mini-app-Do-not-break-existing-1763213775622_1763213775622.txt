@@ -1,0 +1,192 @@
+Follow these instructions VERY STRICTLY.
+You are editing an existing mini-app.
+Do not break existing functionality.
+You must apply ALL instructions below exactly as written.
+
+1. REMOVE TEXT FROM THE MAIN PAGE
+
+On the main screen, inside the yellow exchange-rate card, REMOVE the paragraph:
+
+“Курс берётся по официальной ставке ЦБ РФ через Google...”
+
+This paragraph MUST be removed entirely from the main screen.
+Only the line with the rate should remain:
+
+“1 USDT ≈ XX.XX ₽”
+
+2. MOVE TEXT INTO “Инструкция” SECTION
+
+Inside the Инструкция page, ADD this explanatory block:
+
+Блок: “Как мы считаем курс”
+Курс берётся по рыночному значению USDT/RUB с учётом нашей комиссии.
+Стандартная комиссия — 2%.
+
+При выборе стандартной скорости (10–30 минут) курс на 0.5% выгоднее.
+При срочной оплате (5–10 минут) курс стандартный.
+
+3. UPDATE “Инструкция” — WHAT CAN BE PAID
+
+Replace the entire “Что можно оплачивать” list with the following clean, correct version.
+
+Раздел: Что можно оплачивать
+
+Add this exact list:
+
+1. Рестораны и кафе  
+   • Используйте QR-коды на столах  
+   • Или ссылки на счета (например, сервисы типа Tapper)
+
+2. Магазины и сервисы, где выдают ссылку или QR-код  
+   • Любые платежи, которые можно оплатить в течение 5–7 минут
+
+3. Счета организаций  
+   • Коммунальные услуги  
+   • Счета от компаний и ИП  
+   • Оплата по реквизитам через выставленный счёт
+
+Что нельзя оплачивать
+
+Replace old texts with:
+
+• Покупки, которые требуют мгновенной оплаты (менее 5 минут)
+• Платежи на кассе, где QR-код нужно оплатить прямо сейчас
+
+4. CHANGE THE “Инструкция” FOOTER MESSAGE
+
+Replace the final line with:
+
+Если у вас есть вопросы — не стесняйтесь писать нам в Telegram. Мы обычно отвечаем в течение 5–20 минут.
+
+5. REDESIGN THE MAIN SCREEN LAYOUT
+
+You MUST significantly improve layout and spacing on the main page based on the following directives:
+
+A. Reduce excessive empty space
+
+Currently, large empty margins exist between blocks.
+Make vertical spacing more compact.
+
+Padding inside blocks should remain comfortable, but gaps between them must be reduced.
+
+B. Recompose the structure (very important)
+NEW correct layout order:
+
+Баланс в USDT (top block)
+
+Title: “Баланс USDT”
+
+Value: “XX.XX”
+
+Subtext: “USDT”
+
+Frozen block directly under it.
+
+Курс блока
+
+Only the rate:
+“1 USDT ≈ XX.XX ₽”
+
+Эквивалент в рублях
+
+Title: “Эквивалент в ₽”
+
+Value “XX XXX ₽”
+
+Remove the tiny ruble symbol under the number — make it integrated into the number.
+
+Buttons block
+
+Make buttons larger and wider
+
+Horizontal layout remains:
+[ Пополнить ] [ Оплатить ]
+
+Buttons must be at least 30–40% taller than now.
+
+Font size must increase for readability.
+
+Bottom navigation
+
+Leave unchanged.
+
+6. FIX TYPOGRAPHIC PROPORTIONS
+
+Currently, the ruble equivalent block has mismatched proportions.
+
+Apply the following:
+
+The title “Эквивалент в ₽” should be visually equal to “Баланс USDT”
+
+The numeric value (ex: “1 684 ₽”) must match the size of the USDT numeric value
+
+REMOVE the separate “₽” small symbol
+→ integrate it into the large number:
+
+Example:
+
+1 684 ₽
+
+
+One line, balanced and centered.
+
+7. BUTTON REDESIGN IN DETAIL
+
+Buttons currently look too small and visually lost.
+
+Replace them with:
+
+New button rules
+
+Height: +30% more than current
+
+Width: stretch more horizontally (less side empty space)
+
+Rounded corners: +10–15% radius compared to now
+
+Font size: increase to match visual weight of numbers above
+
+Icons must stay but increase size by ~20%
+
+Coloring stays the same (yellow + blue)
+8. ENSURE ALL TEXTS REFER TO “Эквивалент в рублях”, NOT “Рубли”
+
+Replace everywhere:
+
+❌ “Рубли”
+✔️ “Эквивалент в ₽”
+
+9. Maintain the skewed “comic” border style (do not remove it)
+
+All existing skewed/hand-drawn borders must stay EXACTLY as currently implemented.
+
+Only change layout and spacing — NOT the style.
+
+10. DO NOT break navigation
+
+Main important UX rule:
+
+When user is inside the “Создание заявки” flow,
+they must be able to switch tabs:
+
+Главная
+
+История
+
+Инструкция
+
+Настройки
+
+And when they return to "Главная", their position in the wizard must be preserved.
+
+If this logic is not implemented — implement it.
+
+11. Test all screen sizes
+
+This redesign must look good on:
+
+small phones
+
+medium phones
+
+desktop preview

@@ -1,0 +1,74 @@
+Please update the “Инструкция” section of the mini-app UI according to the following requirements.
+All text must remain in Russian. Keep the current layout structure, but apply the changes below.
+
+1. Переработать блоки внутри раздела «Инструкция»
+
+Make all instruction blocks 15–20% less tall and less bulky:
+
+Reduce vertical padding inside all cards/blocks by ~15–20%.
+
+Reduce line spacing by ~10%.
+
+Reduce inner margins between title and text.
+
+Keep readability, but overall make the instruction section more compact, modern and visually lighter.
+
+Slightly refine typography (e.g., headings slightly smaller or with tighter spacing).
+
+Preserve style consistency with the rest of the app.
+
+2. Изменить содержание раздела «Инструкция»
+
+Modify the text blocks:
+
+A) УБРАТЬ текущее описание комиссий полностью
+
+Delete any text mentioning комиссии, проценты, наценки, разницу курсов.
+
+B) ПЕРЕМЕСТИТЬ блок «Как мы считаем курс» в самый низ раздела
+
+Move the entire block to the bottom of the instruction screen.
+
+It must be the final section.
+
+C) Изменить текст про курс
+
+Replace the old text with the following:
+
+📈 Как мы считаем курс  
+Мы отображаем официальный курс ЦБ РФ, полученный через Google.  
+Курс является ориентировочным и обновляется автоматически.
+
+
+The tone should be clear, friendly and concise.
+
+3. Обновить структуру раздела «Инструкция»
+
+Inside the instructions screen, use the following order:
+
+(1) Что можно оплачивать
+• Рестораны и кафе (QR-коды на столах, ссылки на электронные счета).
+• Интернет-магазины, если есть счет или QR-код.
+• Любые услуги, где можно оплатить в течение хотя бы 5–7 минут.
+
+(2) Что нельзя оплачивать
+• Ситуации, где оплата требуется за 1–2 минуты (например, на кассе в магазине).
+• Оплата, где QR-код действует слишком мало времени.
+
+(3) Если есть вопросы
+Если у вас возникли вопросы — не стесняйтесь писать нам в Telegram.  
+Мы всегда поможем.
+
+(4) Как мы считаем курс (переместить в самый низ)
+
+(Использовать текст из п.2C.)
+
+4. Визуальные требования к секции «Инструкция»
+
+Keep the overall style but make the blocks visually more compact.
+
+Reduce excessive whitespace.
+
+Keep icons but slightly downscale them if needed.
+
+Maintain the clean soft-banking style of the rest of the UI.

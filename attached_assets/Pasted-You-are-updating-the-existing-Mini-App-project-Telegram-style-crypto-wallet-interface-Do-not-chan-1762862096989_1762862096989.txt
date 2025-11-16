@@ -1,0 +1,205 @@
+You are updating the existing Mini App project (Telegram-style crypto wallet interface).
+Do not change the layout or styling — just improve the balance logic and UI wording.
+All user-facing text must be in Russian.
+Keep it interactive inside Replit’s test mode (no external API needed).
+
+🧭 Goal
+
+When a user creates a payment request, a part of their USDT balance should be frozen (reserved) until the request is completed or cancelled.
+The UI must now show two balance lines:
+
+“Доступный баланс в USDT” — available funds that can still be used for new payments.
+
+“Заморожено” — total amount of USDT currently frozen in pending or processing requests.
+
+These two values must always add up to the user’s total balance.
+
+The same principle applies to the RUB equivalent below:
+show the available balance in ₽ (based on the same USDT→₽ rate).
+
+⚙️ Logic and behavior
+1️⃣ When the app starts:
+
+The total balance (for example 270.50 USDT) is stored internally as two values:
+
+totalBalanceUSDT = 270.50
+availableUSDT = 270.50
+frozenUSDT = 0.00
+
+
+RUB equivalent is calculated using the current exchange rate:
+
+rate = 89.36
+availableRUB = availableUSDT * rate
+
+
+Displayed values on the Home screen:
+
+Title: «Доступный баланс в USDT»
+Value: 270.50 USDT
+
+Below that, gray small line:
+«Заморожено: 0.00 USDT»
+
+Card below:
+«Эквивалент в ₽» → 24 172 ₽
+
+2️⃣ When a new payment request is created:
+
+After Step 4 of the “Оплатить” wizard, when the user presses “Отправить заявку”:
+
+The required amount in USDT (based on the request) is moved from available → frozen.
+
+Example:
+
+amountUSDT = 269.83
+availableUSDT = availableUSDT - amountUSDT
+frozenUSDT = frozenUSDT + amountUSDT
+
+
+On the Home screen:
+
+“Доступный баланс в USDT” = 0.67 USDT
+
+“Заморожено” = 269.83 USDT
+
+RUB equivalent (Эквивалент в ₽) recalculates automatically using the same current rate (not frozen one — just display).
+
+availableRUB = availableUSDT * rate
+
+
+The “frozen” line stays visible in small gray text with a lock icon: 🔒
+
+3️⃣ If the request is later paid / completed:
+
+Frozen amount is considered spent, so:
+
+frozenUSDT -= amountUSDT
+totalBalanceUSDT -= amountUSDT
+// available remains the same
+
+
+The History card updates status → “ОПЛАЧЕНО”.
+
+4️⃣ If the request is cancelled / rejected:
+
+The frozen funds return to available balance:
+
+availableUSDT += amountUSDT
+frozenUSDT -= amountUSDT
+
+
+The History status → “ОТМЕНЕНО” or “ОТКЛОНЕНО”.
+
+Show a small toast message (in Russian):
+«Заявка отменена. Средства возвращены на баланс.»
+
+5️⃣ Display rules
+
+Home screen must always show:
+
+Top large card:
+
+Title: «Доступный баланс в USDT»
+
+Main value (large font, e.g. 270.50)
+
+Subtext: USDT
+
+Below it (smaller, gray text with lock icon):
+«Заморожено: {frozenUSDT} USDT»
+
+Divider line.
+
+Card below:
+
+«Курс USDT → ₽»
+
+Example: 1 USDT ≈ 89.36 ₽
+
+Next card:
+
+«Эквивалент в ₽»
+
+Example: 24 172 ₽
+
+Buttons remain the same:
+
+➕ Пополнить (secondary style)
+
+💳 Оплатить (primary blue gradient)
+
+🧩 Technical notes
+
+Use a single local state object to store:
+
+{
+  totalUSDT,
+  availableUSDT,
+  frozenUSDT,
+  rate,
+  availableRUB
+}
+
+
+Update availableRUB every time availableUSDT changes.
+
+Keep frozenUSDT formatted to 2 decimal places.
+
+If both values are zero, still display both lines to preserve UI consistency.
+
+For test simulation:
+
+When user presses “Я пополнил” → availableUSDT += 150.
+
+When submitting payment → freeze.
+
+When cancelling → unfreeze.
+
+Keep transitions smooth (fade or number counter animation on change).
+
+💡 Optional UX polish
+
+When balance updates (either available or frozen):
+
+Animate the number change with a short ease-out (like “count up” effect).
+
+For the frozen line, briefly flash a soft amber highlight before fading to gray.
+
+Use icons:
+
+🔒 for frozen
+
+💰 for available
+
+📘 Russian text for UI elements
+English meaning	Russian text
+Available balance	Доступный баланс в USDT
+Frozen	Заморожено:
+Exchange rate	1 USDT ≈ {rate} ₽
+Equivalent in RUB	Эквивалент в ₽
+Toast (refund)	Заявка отменена. Средства возвращены на баланс.
+✅ Deliverable
+
+Replit should:
+
+Implement the available/frozen balance logic exactly as above.
+
+Update the display text on the Home screen accordingly.
+
+Keep all other pages and features (history, payment flow, etc.) unchanged.
+
+Ensure RUB equivalent updates automatically when balances change.
+
+Preserve the Revolut-style design and font sizes.
+
+End of prompt.
+After applying, test by:
+
+Checking Home → values before payment.
+
+Create a payment → check frozen & available change.
+
+Cancel the request → ensure refund works.
+
+All amounts and ruble equivalents must visually match this logic.

@@ -1,0 +1,290 @@
+You are updating an existing Telegram-style Mini App prototype.
+Do not change business logic or flows; focus on:
+
+Redesigning the main action buttons (“Пополнить”, “Оплатить”) to look more balanced and less empty.
+
+Redesigning the bottom tab bar icons and appearance (Главная, История заявок, Инструкция, Настройки).
+
+Making the overall design slightly more colorful and visually rich, while staying modern, clean, and Revolut-inspired — not overloaded.
+
+Fixing tab navigation so that the user can switch freely between tabs even while inside the “Оплатить” wizard, and verifying this behavior by interacting with the app yourself.
+
+All user-facing text remains in Russian.
+
+1) Global visual style update
+
+Keep the general light theme but make the interface richer and more harmonious, not ultra-minimal.
+
+Colors:
+
+Page background: #F3F4F8
+
+Card background: gradient linear-gradient(180deg, #FFFFFF 0%, #F9FAFB 100%)
+
+Primary accent: gradient #4F8BFF → #2665FF
+
+Secondary accent: gradient #FEB47B → #FF7E5F (for highlights, urgent tags)
+
+Borders: #E1E5F0
+
+Main text: #111827
+
+Secondary text: #6B7280
+
+Disabled text: #9CA3AF
+
+Success tag: background #DCFCE7, text #16A34A
+
+Warning tag: background #FEF9C3, text #CA8A04
+
+Neutral tag: background #E5E7EB, text #4B5563
+
+Typography:
+
+Use Plus Jakarta Sans or Inter as primary font (fallback system sans).
+
+Heading font-weight: 700, section titles: 600, body: 400, button labels: 600–700.
+
+Use slightly larger font sizes for key numbers (balances, sums).
+
+Numbers (balances, amounts) should use a monospaced / tabular numeric variant if available.
+
+Cards & shadows:
+
+Card border-radius: 20px.
+
+Shadow: 0 8px 24px rgba(15, 23, 42, 0.06) for main cards.
+
+Inner padding: 20–24px.
+
+Use subtle separators inside cards (1px solid #E1E5F0).
+
+2) Redesign the main action buttons (“Пополнить”, “Оплатить”)
+
+Target area: the two big buttons on Home: Пополнить and Оплатить.
+
+Current issue: too much empty space, look flat and not very expressive.
+New design should be denser, more informative, and visually attractive.
+
+Layout
+
+Place two buttons side by side as before, but:
+
+Each button width ~48% of container.
+
+Height ~56–60px (not too tall).
+
+Border-radius: 20px.
+
+Use icon + label centered vertically.
+
+Button: “Пополнить”
+
+Label: Пополнить
+
+Icon: simple plus inside rounded square (e.g. line icon) placed on the left, not above.
+
+Background: light elevated card, not fully white:
+
+Background color: #F9FAFB
+
+Border: 1px solid #E1E5F0
+
+Text color: #111827
+
+Icon color: primary blue #2665FF.
+
+On hover / active (for desktop): border color becomes #C7D2FE, slight shadow.
+
+Internally, layout:
+
+Left: icon inside a smaller pill 32x32px with light blue background #E0EAFF.
+
+Right: text label Пополнить, weight 600, size 15–16px.
+
+Button: “Оплатить”
+
+Label: Оплатить
+
+Icon: simple card icon (outline) on the left.
+
+Background: primary gradient:
+
+Background: linear-gradient(135deg, #4F8BFF 0%, #2665FF 100%)
+
+Text color: #FFFFFF
+
+Icon color: #FFFFFF (slightly translucent).
+
+Shadow: 0 10px 24px rgba(38, 101, 255, 0.35) to make it feel tappable.
+
+On press: reduce scale to 0.97 and darken gradient slightly.
+
+Inside: same layout as popолнить — icon on left, label on right.
+
+Spacing & alignment
+
+Keep equal horizontal padding inside both buttons (16px left/right).
+
+Vertically center icon and text.
+
+Reduce “empty” area above/below text by using line-height close to 1.1–1.2.
+
+3) Redesign the bottom tab bar (Главная, История заявок, Инструкция, Настройки)
+
+Goal: make bottom navigation look more premium and expressive, not just flat icons.
+
+Structure
+
+Floating rounded container with blur:
+
+Background: rgba(255,255,255,0.92)
+
+backdrop-filter: blur(18px)
+
+Border-radius: 24–26px.
+
+Shadow: 0 12px 30px rgba(15, 23, 42, 0.10).
+
+Each tab: icon + label in Russian:
+
+Главная (Дом)
+
+История or История заявок (Чек / список)
+
+Инструкция (Книжка / документ)
+
+Настройки (Шестерёнка)
+
+Use modern outline icons (e.g. Heroicons style): simple, rounded, no heavy detail.
+
+Active vs inactive tab
+
+Active tab:
+
+Background behind icon+label: small pill border-radius: 18px, padding: 8px 14px.
+
+Background color: #EEF2FF (soft blue) or light gradient from #E0EAFF to #E5F0FF.
+
+Icon color: primary blue #2665FF.
+
+Label color: #2665FF, font-weight: 600.
+
+Inactive tab:
+
+No pill background, transparent.
+
+Icon color: #9CA3AF.
+
+Label color: #6B7280, font-weight: 500.
+
+Hover / active (desktop):
+
+Slight upward movement (2–3px) and fade for active pill.
+
+Spacing:
+
+Ensure each tab has enough padding so icons are not squeezed; horizontal spacing between tabs should be equal.
+
+4) Free tab navigation during payment wizard (MUST FIX and VERIFY)
+
+Problem: currently, when the user is in the “Оплатить” wizard (for example, on the “Выберите срочность обработки” step), they cannot tap bottom tabs (Главная, История, Инструкция, Настройки). Only the “Назад” button allows them to exit.
+
+Requirement:
+
+The bottom navigation tabs must remain fully functional at all times, including all steps of the “Оплатить” wizard.
+
+Tapping any tab should immediately navigate to that screen without requiring the user to cancel or go back step-by-step.
+
+When the user returns to “Оплатить” via tab, the wizard state should still be present (amount, urgency, attachments, comment, locked rate). No loss of data.
+
+Implementation guidance:
+
+Treat the bottom nav as global app-level navigation, not nested inside the wizard.
+
+Store wizard state in a global store or context (for example, React context / Redux / Zustand) instead of local component state that gets destroyed on navigation.
+
+On entering the “Оплатить” tab, the screen should:
+
+If there is unfinished draft data → restore fields and the current step.
+
+If not → start at Step 1.
+
+Ensure you do not block tab clicks with any overlay or pointer-events: avoid placing full-screen modal overlays over the bottom bar.
+
+Verification (explicit task):
+
+After implementing the change, manually test it in the running app:
+
+Go to “Главная” → tap Оплатить.
+
+Enter a valid amount, go to the urgency step.
+
+While on the urgency step, tap Инструкция in the bottom bar.
+
+You must navigate to the instruction screen immediately.
+
+Then tap Главная, then История, then Настройки, in any order.
+
+Navigation must work each time.
+
+Tap Главная → Оплатить tab again.
+
+You must see the same step and the same data that you previously entered.
+
+If any of these steps do not work, adjust the navigation/state logic until they all pass.
+
+5) Small additional visual tweaks for harmony
+
+Apply these tweaks across screens to make the design more interesting but still clean:
+
+Section headers:
+
+Use a slightly darker text (#111827) and small colored dot on the left (#4F8BFF).
+
+Example: “История заявок” with a blue dot indicator.
+
+Amounts and balances:
+
+Display large numbers (e.g. 270.50, 24 172 ₽) with tracking slightly tightened and line-height ~1.1.
+
+Use a subtle vertical gradient overlay on the number (transparent → rgba(79,139,255,0.06)) for a more “digital” feel.
+
+Status badges:
+
+For each status: pill with icon + text.
+
+Отправлено → blue dot icon
+
+В обработке → amber clock icon
+
+Оплачено → green check
+
+Отменено → gray “x”
+
+Place badges at top-right of request cards.
+
+Infographic cards in “Инструкция”:
+
+Make each section (Как это работает, Где удобно платить, Когда не подойдёт, Про курс и комиссию) a separate card with icon and short bullets.
+
+Use small pastel backgrounds behind the icons.
+
+Pressed/hover states:
+
+Every clickable element (buttons, tabs, list items) must have a clear pressed state (scale 0.97 + shadow change) and hover state for desktop.
+
+6) Deliverables
+
+Redesign the “Пополнить” and “Оплатить” buttons exactly as described (side-by-side, gradient primary button, lighter secondary button with icon on the left, less empty space).
+
+Redesign the bottom tab bar: floating, blurred, with active pill and attractive icons + Russian labels.
+
+Apply global style updates (colors, typography, card shadows) to make the app more visually rich and harmonious but still clean and modern.
+
+Fix free tab navigation so that bottom tabs work from any wizard step, with wizard state preserved across tab switches.
+
+Manually verify the navigation scenario described above and adjust if anything still blocks tab switching.
+
+All existing business logic (balances, freezing, statuses, limits, urgent/standard math) must remain intact.
+All user-facing text (labels, messages, buttons) must stay in Russian.

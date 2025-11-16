@@ -1,0 +1,138 @@
+Create a Telegram Mini App (Web App) called CryptoPay Mini, built as a clean, minimalistic web interface that runs smoothly inside Telegram.
+This project must be self-contained (no external AI Agents, no Automations) — just a regular app with a simple server and front-end that I can host for free or under my existing Replit subscription.
+
+🧭 Concept
+
+This mini-app simulates a Telegram bot that lets users:
+
+Top up an internal balance in USDT (TRC20)
+
+See the USDT→RUB conversion rate and their balance in rubles
+
+Create payment requests in rubles
+
+Track payment history
+
+Access support information
+
+Everything should look and feel like a light-weight Revolut-style wallet interface — modern, smooth, and intuitive.
+
+🧱 App structure
+1. Welcome screen
+
+Greeting:
+“Hey! I’m your crypto payment assistant. Pay in RUB using USDT (TRC20). Fast, secure, and simple.”
+
+Button: “Open My Wallet”
+
+2. Main dashboard
+
+Shows three blocks:
+
+USDT Balance (example: 120.50 USDT)
+
+Exchange rate (1 USDT ≈ 90 RUB)
+
+RUB Equivalent (10 845 ₽)
+
+Main buttons:
+
+➕ Top Up
+
+💳 Pay
+
+Bottom navigation bar:
+
+🏠 Home | 🧾 History | 🆘 Support | ⚙️ Settings
+
+3. Top-Up page
+
+Displays the fixed TRC-20 wallet address (from environment variable).
+
+Button “Copy address”.
+
+Note: “Funds appear after admin confirmation.”
+
+4. Pay page
+
+Step-by-step form:
+
+Input field — “Enter amount in ₽”
+
+Choose urgency:
+
+⚡ Urgent (5–10 min)
+
+⏱️ Standard (10–30 min)
+
+Field to paste a link or describe the bill (simulate attachment).
+
+Optional comment field.
+
+Confirmation screen: show RUB amount, USDT equivalent, rate, urgency, and “Submit” button.
+After submission: show success card — “✅ Request submitted. We’ll process it soon.”
+
+5. History page
+
+Scrollable list of cards, each showing:
+
+RUB amount
+
+USDT equivalent
+
+Urgency type
+
+Status (Submitted / Paid / Processing / Rejected)
+
+Date/time
+
+6. Support page
+
+Contact block:
+“Need help? Contact @supportname or support@example.com
+.”
+
+7. Settings page
+
+Shows basic profile info (username, registration date).
+
+Option to simulate “Log out” or “Clear data”.
+
+🎨 Design & UX
+
+Style: Revolut / N26 / Monzo look — clean, flat, elegant.
+
+Colors: white background, light grey cards, blue accent, soft shadow, rounded corners.
+
+Typography: modern sans-serif, large numbers for balances.
+
+Animations: subtle fade transitions between pages.
+
+Responsive: must look perfect in Telegram WebView and mobile.
+
+⚙️ Functionality
+
+All data (users, balances, requests) can be stored locally (JSON or SQLite) for simplicity.
+
+Exchange rate: simulated fixed value (e.g. 90 RUB per USDT) with slight random fluctuation.
+
+Include basic server endpoints so Telegram can open this mini-app via web link.
+
+Auto-deploy and give me the final public URL (example: https://cryptopay-mini.<username>.replit.app/telegram-miniapp).
+
+🪄 What I expect from Replit
+
+Generate a complete working mini-app, ready to open in Telegram.
+
+Deploy automatically on my Replit domain.
+
+Print at the end:
+
+The final public URL of the mini-app.
+
+A short instruction:
+
+“Copy this URL and add it in @BotFather → Edit Menu Button → Add Web App → Paste link → Save.”
+
+That should be the only manual step I need to do.
+Everything else — code, styling, hosting, deployment — should be handled automatically.

@@ -1,0 +1,362 @@
+Transform the existing Mini App prototype into an interactive test app that reflects the changes below.
+Keep all functionality purely local (in-memory or simple JSON).
+Allow full navigation and state preservation during the payment wizard.
+All text visible to the user must be in Russian (provided below verbatim).
+
+Global requirements
+
+Keep Revolut-style visual language (soft, rounded, airy, minimalist).
+
+Improve typography and color system for a more premium feel:
+
+Font: modern geometric sans (e.g., Inter/SF Pro/Plus Jakarta), large numerals, tight tracking for big amounts.
+
+Palette (light mode): background #F7F8FA, cards #FFFFFF, primary #3B82F6, accent gradient (optional) from #6AA7FF to #3B82F6, text #111827, secondary #6B7280, dividers #E5E7EB, success #22C55E, warning #F59E0B, danger #EF4444.
+
+Cards: radius 16–20px, gentle shadow (blur ~10, opacity ~10%), internal padding 16–20px.
+
+Buttons: large, rounded 12–16px; primary = blue with white text; secondary = soft gray; full-width on forms.
+
+Bottom floating nav bar: rounded 24px, light shadow, active item in blue.
+
+Smooth transitions (150–200ms), spinner for loading.
+
+Bottom tabs (icons + Russian labels):
+🏠 Главная | 🧾 История заявок | 📘 Инструкция | ⚙️ Настройки
+
+Navigation & state
+
+The payment wizard must not lock the app. Users can switch tabs at any time; wizard state is preserved when they return.
+
+Use consistent back behavior (Назад) inside screens, but bottom tabs always remain tappable.
+
+Screens & Russian copy
+1) Главная
+
+Greeting card:
+
+Title: «Привет!»
+
+Subtitle: «Плати в рублях, пополняя баланс в USDT (TRC20). Быстро, удобно, современно.»
+
+Info cards (auto-updated by local state):
+
+«Баланс в USDT» → XX.XX USDT
+
+«Курс USDT → ₽» → 1 USDT ≈ 90.00 ₽ (±0.3 ₽ random OK for test)
+
+«Эквивалент в ₽» → {рублёвый эквивалент} ₽
+
+Primary buttons:
+
+«➕ Пополнить» → open Top-Up
+
+«💳 Оплатить» → open Payment wizard
+
+Small gray hint: «Для тестовой версии все операции эмулируются.»
+
+2) Пополнить
+
+Title: «Пополнить баланс USDT (TRC20)»
+
+Label: «Адрес для пополнения (TRC20):»
+
+Address box (placeholder OK): TX1111111111111111111111
+
+Buttons:
+
+«Скопировать адрес» (no external effect needed in test)
+
+«Я пополнил» → show loading 3–4s, then:
+
+Success screen:
+
+Big title: «Отлично!»
+
+Text: «Видим ваше пополнение на 150 USDT.»
+
+Button: «Вернуться на главную страницу» (and increase balance by +150.00 USDT)
+
+Tiny gray note bottom:
+«В продакшене здесь запускается пересмотр баланса и проверка входящих транзакций. В этой тестовой версии пополнение эмулируется.»
+
+3) Оплатить (wizard, 4 steps)
+
+Important: the exchange rate is fixed at Step 1 and reused across later steps and in History.
+
+Step 1 — Amount
+
+Header left: «Назад»; header right: «Шаг 1/4»
+
+Title: «Укажите сумму в ₽»
+
+New inline info below title:
+«Ваш баланс в рублях: {XXX XXX ₽}» (this is the RUB equivalent of the current USDT balance at the current rate on Home; still, the request uses the rate fixed at Step 1).
+
+Input placeholder: «Например, 2 500»
+
+Validation rules:
+
+Minimum = 3000 ₽ → show neat inline message in red: «Минимальная сумма — 3 000 ₽.»
+
+Maximum = 100 000 ₽ → «Максимальная сумма — 100 000 ₽.»
+
+Amount must not exceed current RUB equivalent of balance →
+«Недостаточно средств. Доступно: {YYY YYY ₽}. Пополните баланс или уменьшите сумму.»
+
+Buttons: «Отмена» (to Home), «Далее»
+
+On “Далее”, freeze the USDT→RUB rate for this request (store it with the draft).
+
+Step 2 — Urgency
+
+Header right: «Шаг 2/4»
+
+Title: «Выберите срочность обработки»
+
+Options (two large segmented buttons with helper notes):
+
+«⚡ Срочно (5–10 минут)»
+helper text under option: «Курс с доп. комиссией 0,5%.»
+
+«⏱️ Стандартно (10–30 минут)»
+helper text: «Без доп. комиссии.»
+
+Buttons: «Назад», «Далее»
+
+Apply a +0.5% fee (worse rate by 0.5%) to the frozen Step-1 rate only if “Срочно” is selected. Show this in the Step-4 summary and later in History.
+
+Step 3 — Attachments
+
+Header right: «Шаг 3/4»
+
+Title (replace previous wording):
+«Прикрепите QR-код, ссылку или PDF-документ со счётом на оплату»
+
+UI: a compact attachment row with a paperclip icon and three attach options:
+
+Фото (screenshot/photo — image picker in test; store preview thumbnail)
+
+Ссылка (URL input)
+
+PDF (file picker; show file chip)
+
+Show attached items as rounded chips with small previews/titles and “×” to remove.
+
+Buttons: «Назад», «Далее»
+
+Step 4 — Comment & Summary
+
+Header right: «Шаг 4/4»
+
+Title: «Комментарий к заявке (необязательно)»
+
+Placeholder: «Например: оплатить без чаевых»
+
+Summary block (uses frozen rate; add urgent fee if chosen):
+
+«Сумма: {XXX ₽}»
+
+«Эквивалент в USDT: {ZZ.ZZ USDT}»
+
+«Срочность: Срочно / Стандартно»
+
+If Срочно selected, add small gray note: «Курс с доп. комиссией 0,5%.»
+
+Buttons: «Назад», «Отправить заявку»
+
+After submission (Success screen)
+
+Title: «Заявка отправлена»
+
+Text block:
+
+Спасибо! Мы получили вашу заявку и постараемся оплатить её как можно скорее.
+Сумма: {XXX ₽}
+Заморозили на балансе: {ZZ.ZZ USDT}
+Статус: ОТПРАВЛЕНА
+
+
+Button: «Вернуться на главную страницу»
+
+Effects:
+
+Freeze {ZZ.ZZ USDT} on balance (do not deduct permanently; mark as “frozen”).
+
+Save request to History with status ОТПРАВЛЕНА, the frozen rate, urgency, and attachments.
+
+4) История заявок
+
+Title: «История заявок»
+
+List of cards (newest first). Each card shows:
+
+Top line large: «Сумма: {XXX ₽}»; top-right status badge.
+
+Line 2: «Эквивалент: {ZZ.ZZ USDT} • Срочность: Срочно/Стандартно»
+
+Line 3 (gray): «Создано: {dd.mm.yyyy, HH:MM} • Курс: {rate used} ₽»
+
+Statuses (uppercase): ОТПРАВЛЕНА, В ОБРАБОТКЕ, ОПЛАЧЕНО, ОТКЛОНЕНО, ОТМЕНЕНО.
+
+Empty state:
+
+Title: «Заявок пока нет»
+
+Subtitle: «Создайте первую заявку на главной странице.»
+
+Button: «На главную»
+
+NEW: Tapping a card opens a Request Detail screen
+
+Title: «Заявка №{ID}»
+
+Sections (cards):
+
+«Сумма»: {XXX ₽}
+
+«Эквивалент в USDT»: {ZZ.ZZ USDT}
+
+«Статус»: {STATUS}
+
+«Срочность»: Срочно / Стандартно (show «Курс с доп. комиссией 0,5%.» if Срочно)
+
+«Использованный курс»: {rate at Step 1 (+0.5% if urgent)}
+
+«Заморожено на балансе»: {ZZ.ZZ USDT}
+
+«Вложение»: thumbnails / link / file chips (tap to preview)
+
+«Комментарий»: (text or «—»)
+
+«Создано»: {dd.mm.yyyy, HH:MM}
+
+Test-only admin row (visible in test build):
+Secondary button: «Симулировать оплату (тест)»
+→ sets status to ОПЛАЧЕНО, unfreezes the USDT, and triggers an in-app notification.
+
+5) Инструкция (replaces “Поддержка” tab)
+
+Title: «Инструкция»
+
+Friendly body text (exact Russian copy):
+
+«Как это работает»
+
+Пополняете баланс в USDT (TRC20).
+
+Создаёте заявку на оплату в рублях.
+
+Мы оплачиваем счёт за вас.
+
+Минимальный чек: 3 000 ₽
+Максимальный чек: 100 000 ₽
+
+Про курс и комиссию
+Ваш баланс всегда хранится в USDT.
+Пересчёт в рубли происходит по рыночному курсу с учётом нашей комиссии 1% — поэтому рублёвый эквивалент на главной странице динамичный.
+Курс фиксируется в момент создания заявки и не меняется для этой заявки.
+Для срочной обработки действует доп. комиссия 0,5% (курс чуть менее выгодный).
+
+Нужна помощь?
+Нажмите кнопку ниже, чтобы написать нам в Telegram.
+
+Button at bottom: «Написать в Telegram» (simulated action in test).
+
+6) Настройки
+
+Title: «Настройки»
+
+Profile block:
+
+«Имя в Telegram: @username» (placeholder OK)
+
+«Дата регистрации: 11.11.2025» (static or generated)
+
+Button: «Очистить тестовые данные» (wipes local state: balances (incl. frozen), history, wizard drafts)
+
+Tiny gray note:
+«В этой тестовой версии данные хранятся локально для демонстрации работы интерфейса.»
+
+Business logic (test mode)
+
+Balances
+
+Store two numbers: available USDT and frozen USDT.
+
+On “Я пополнил” → available += 150.00.
+
+On request submit → frozen += usdt_needed; available doesn’t decrease.
+
+On “Симулировать оплату (тест)”:
+
+Set status ОПЛАЧЕНО,
+
+frozen -= usdt_needed (USDT is considered spent),
+
+Trigger in-app notification (see below).
+
+Rate
+
+Home shows live-ish rate (90.00 ₽ ± 0.3).
+
+Freeze rate at Step 1 (store it with draft).
+
+If Срочно, apply +0.5% fee to that frozen rate (for conversion only).
+
+Amount rules
+
+Min 3 000 ₽, Max 100 000 ₽ (block “Далее” with inline messages).
+
+Amount must be ≤ current RUB equivalent of available USDT (calculated at the current Home rate; wizard still uses the frozen rate afterward).
+
+Attachments
+
+Support three simulated inputs: Image (thumbnail), Link (validated URL string), PDF (file chip).
+
+Show chips with remove (“×”) and basic preview.
+
+Notifications (test implementation)
+
+Add a bell icon in the top bar (all tabs) with a small badge for unread.
+
+When “Симулировать оплату (тест)” is pressed on a request detail:
+
+Push a notification item:
+«Заявка №{ID} оплачена»
+
+Show toast: «Готово: заявка №{ID} оплачена.»
+
+Badge increments; a simple notifications sheet can appear when the bell is tapped.
+
+Micro-copy (exact Russian strings matrix)
+
+Главная: «Привет!», «Плати в рублях, пополняя баланс в USDT (TRC20). Быстро, удобно, современно.», «Баланс в USDT», «Курс USDT → ₽», «Эквивалент в ₽», «➕ Пополнить», «💳 Оплатить», «Для тестовой версии все операции эмулируются.»
+
+Пополнить: «Пополнить баланс USDT (TRC20)», «Адрес для пополнения (TRC20):», «Скопировать адрес», «Я пополнил», success: «Отлично!», «Видим ваше пополнение на 150 USDT.», «Вернуться на главную страницу».
+
+Оплатить — Шаг 1/4: «Укажите сумму в ₽», inline: «Ваш баланс в рублях: {XXX XXX ₽}», placeholder «Например, 2 500», errors: «Минимальная сумма — 3 000 ₽.», «Максимальная сумма — 100 000 ₽.», «Недостаточно средств. Доступно: {YYY YYY ₽}. Пополните баланс или уменьшите сумму.», buttons «Отмена», «Далее».
+
+Оплатить — Шаг 2/4: «Выберите срочность обработки», options with notes: «⚡ Срочно (5–10 минут)», small: «Курс с доп. комиссией 0,5%.» / «⏱️ Стандартно (10–30 минут)», small: «Без доп. комиссии.», buttons «Назад», «Далее».
+
+Оплатить — Шаг 3/4: «Прикрепите QR-код, ссылку или PDF-документ со счётом на оплату», attach options «Фото», «Ссылка», «PDF», chips with remove, buttons «Назад», «Далее».
+
+Оплатить — Шаг 4/4: «Комментарий к заявке (необязательно)», placeholder «Например: оплатить без чаевых», summary labels «Сумма:», «Эквивалент в USDT:», «Срочность:», urgent note «Курс с доп. комиссией 0,5%.», buttons «Назад», «Отправить заявку».
+
+Успех заявки: title «Заявка отправлена», text:
+«Спасибо! Мы получили вашу заявку и постараемся оплатить её как можно скорее.
+Сумма: {XXX ₽}
+Заморозили на балансе: {ZZ.ZZ USDT}
+Статус: ОТПРАВЛЕНА», button «Вернуться на главную страницу».
+
+История: title «История заявок», card fields «Сумма:», «Эквивалент:», «Срочность:», «Создано:», statuses «ОТПРАВЛЕНА», «В ОБРАБОТКЕ», «ОПЛАЧЕНО», «ОТКЛОНЕНО», «ОТМЕНЕНО», empty state «Заявок пока нет», «Создайте первую заявку на главной странице.», button «На главную».
+
+Детали заявки: title «Заявка №{ID}», sections «Сумма», «Эквивалент в USDT», «Статус», «Срочность», urgent note «Курс с доп. комиссией 0,5%.», «Использованный курс», «Заморожено на балансе», «Вложение», «Комментарий», «Создано», test-button «Симулировать оплату (тест)».
+
+Инструкция: title «Инструкция», friendly body exactly as in section 5 above, button «Написать в Telegram».
+
+Настройки: title «Настройки», fields «Имя в Telegram:», «Дата регистрации:», button «Очистить тестовые данные», note «В этой тестовой версии данные хранятся локально для демонстрации работы интерфейса.».
+
+Notifications: bell badge; toast «Готово: заявка №{ID} оплачена.», feed item «Заявка №{ID} оплачена».
+
+Build this entire experience inside Replit’s preview as a self-contained interactive prototype. No external integrations. All user-facing text strictly in Russian as provided.
