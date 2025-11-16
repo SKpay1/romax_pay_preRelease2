@@ -1,0 +1,181 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* SOFT FINTECH DESIGN - LIGHT MODE ONLY */
+:root {
+  /* Warm off-white background */
+  --background: 30 20% 97%;
+  
+  /* Dark teal for headings and primary text */
+  --foreground: 196 68% 15%;
+  
+  /* Soft borders (light gray) */
+  --border: 220 13% 91%;
+  
+  /* White cards */
+  --card: 0 0% 100%;
+  --card-foreground: 196 68% 15%;
+  
+  /* Mint green for balance card - #DFF9EB */
+  --primary: 150 60% 93%;
+  --primary-foreground: 196 68% 15%;
+  
+  /* Deep teal for rate card and primary button - #0B3D4A */
+  --secondary: 196 68% 15%;
+  --secondary-foreground: 0 0% 100%;
+  
+  /* Mint accent for borders and active states - #4AB7A5 */
+  --accent: 171 48% 51%;
+  --accent-foreground: 0 0% 100%;
+  
+  /* Muted gray for secondary text */
+  --muted: 220 13% 91%;
+  --muted-foreground: 215 16% 47%;
+  
+  /* Destructive states */
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  
+  /* Success, Warning, Error */
+  --success: 171 48% 51%;
+  --success-bg: 150 60% 93%;
+  --warning: 38 92% 50%;
+  --warning-bg: 48 100% 93%;
+  --error: 0 72% 51%;
+  --error-bg: 0 100% 93%;
+  
+  /* Input and ring */
+  --input: 0 0% 100%;
+  --ring: 171 48% 51%;
+  
+  /* Popover */
+  --popover: 0 0% 100%;
+  --popover-foreground: 196 68% 15%;
+  
+  /* Chart colors using teal/mint palette */
+  --chart-1: 196 68% 15%;
+  --chart-2: 171 48% 51%;
+  --chart-3: 150 60% 93%;
+  --chart-4: 220 13% 91%;
+  --chart-5: 215 16% 47%;
+  
+  /* Typography */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro", Arial, sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: 'Courier New', monospace;
+  
+  /* Border radius - soft rounded */
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  
+  /* Soft shadows */
+  --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.06);
+  --shadow-soft-sm: 0 4px 12px rgba(0, 0, 0, 0.04);
+  --shadow-soft-lg: 0 20px 50px rgba(0, 0, 0, 0.08);
+  --shadow-button: 0 8px 20px rgba(11, 61, 74, 0.15);
+  
+  /* Spacing */
+  --spacing: 0.25rem;
+}
+
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans bg-background text-foreground;
+    letter-spacing: 0;
+    line-height: 1.4;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    font-weight: 700;
+  }
+}
+
+@layer utilities {
+  input[type="search"]::-webkit-search-cancel-button {
+    @apply hidden;
+  }
+
+  [contenteditable][data-placeholder]:empty::before {
+    content: attr(data-placeholder);
+    color: hsl(var(--muted-foreground));
+    pointer-events: none;
+  }
+
+  /* Soft shadows for fintech design */
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .shadow-soft-sm {
+    box-shadow: var(--shadow-soft-sm);
+  }
+
+  .shadow-soft-lg {
+    box-shadow: var(--shadow-soft-lg);
+  }
+
+  .shadow-button {
+    box-shadow: var(--shadow-button);
+  }
+
+  /* Smooth transitions */
+  .transition-soft {
+    transition: all 0.2s ease-in-out;
+  }
+
+  .transition-shadow {
+    transition: box-shadow 0.2s ease-in-out;
+  }
+
+  /* Hover effects for buttons */
+  .hover-lift:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 40px rgba(11, 61, 74, 0.2);
+  }
+
+  .hover-lift:active {
+    transform: translateY(0);
+  }
+
+  /* Tabular numbers */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(10px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+}
